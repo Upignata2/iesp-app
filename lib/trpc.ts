@@ -1,0 +1,54 @@
+import { useState } from "react";
+
+function useQueryStub<T>(initial: T): { data: T; isLoading: boolean } {
+  const [data] = useState<T>(initial);
+  return { data, isLoading: false };
+}
+
+function useMutation() {
+  return { mutate: (_input: any) => {}, isPending: false };
+}
+
+export const trpc = {
+  articles: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    getById: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+  },
+  news: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    getById: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+  },
+  events: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    getById: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+  },
+  hymns: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    getById: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+    search: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+  },
+  dailyWord: {
+    getByDate: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+    getLatest: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+  },
+  prayerReasons: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    create: { useMutation: () => useMutation() },
+  },
+  serviceSchedules: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+  },
+  gallery: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+  },
+  campaigns: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    getById: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
+    donate: { useMutation: () => useMutation() },
+  },
+  favorites: {
+    list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
+    add: { useMutation: () => useMutation() },
+    remove: { useMutation: () => useMutation() },
+  },
+} as const;

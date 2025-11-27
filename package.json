@@ -1,0 +1,48 @@
+{
+  "name": "iesp-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "server": "node --loader ts-node/esm server.ts",
+    "test": "vitest",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate:pg"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "dotenv": "^16.4.5",
+    "drizzle-orm": "^0.40.0",
+    "lucide-react": "^0.454.0",
+    "mysql2": "^3.11.3",
+    "postgres": "^3.4.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "sonner": "^1.5.0",
+    "wouter": "^2.11.0",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.4.4",
+    "@vercel/node": "^3.0.11",
+    "@tailwindcss/postcss": "^4.1.17",
+    "@types/node": "^24.10.1",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.7.0",
+    "autoprefixer": "^10.4.22",
+    "drizzle-kit": "^0.31.7",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.17",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
+}

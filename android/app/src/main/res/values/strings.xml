@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">IESP App</string>
+    <string name="title_activity_main">IESP App</string>
+    <string name="package_name">com.iesp.app</string>
+    <string name="custom_url_scheme">com.iesp.app</string>
+</resources>
