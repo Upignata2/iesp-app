@@ -5,7 +5,7 @@ function useQueryStub<T>(initial: T): { data: T; isLoading: boolean } {
   return { data, isLoading: false };
 }
 
-function useMutation(_options?: any) {
+function useMutation(..._args: any[]) {
   return { mutate: (_input: any) => {}, isPending: false };
 }
 
@@ -33,7 +33,7 @@ export const trpc = {
   },
   prayerReasons: {
     list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
-    create: { useMutation: (opts?: any) => useMutation(opts) },
+    create: { useMutation: (...opts: any[]) => useMutation(...opts) },
   },
   serviceSchedules: {
     list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
@@ -44,11 +44,11 @@ export const trpc = {
   campaigns: {
     list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
     getById: { useQuery: (..._args: any[]) => useQueryStub<any | null>(null) },
-    donate: { useMutation: (opts?: any) => useMutation(opts) },
+    donate: { useMutation: (...opts: any[]) => useMutation(...opts) },
   },
   favorites: {
     list: { useQuery: (..._args: any[]) => useQueryStub<any[]>([]) },
-    add: { useMutation: (opts?: any) => useMutation(opts) },
-    remove: { useMutation: (opts?: any) => useMutation(opts) },
+    add: { useMutation: (...opts: any[]) => useMutation(...opts) },
+    remove: { useMutation: (...opts: any[]) => useMutation(...opts) },
   },
 } as const;
