@@ -1,16 +1,25 @@
 function setCors(req: any, res: any) {
   const list = (process.env.WEB_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean);
-  const origin = (req.headers.origin as string) || '*';
-  const finalOrigin = list.length ? (list.includes(origin) ? origin : list[0]) : origin;
-  res.setHeader('Access-Control-Allow-Origin', finalOrigin);
+  const origin = (req.headers.origin as string) || '';
+  const ok = !!origin && list.some((p) => {
+    if (p === '*') return true;
+    if (p.includes('*')) {
+      const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+      return re.test(origin);
+    }
+    return p === origin;
+  });
+  if (ok) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  return ok;
 }
 
 export default async function handler(req: any, res: any) {
-  setCors(req, res);
+  const ok = setCors(req, res);
   if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+  if (!ok) { res.status(403).end(); return; }
   if (req.method !== 'GET') { res.status(405).end(); return; }
   const cookieHeader = req.headers['cookie'] || '';
   const parts = cookieHeader.split(';').map((v: string) => v.trim());

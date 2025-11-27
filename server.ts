@@ -13,20 +13,33 @@ function readBody(req: http.IncomingMessage) {
 }
 
 function setCors(req: http.IncomingMessage, res: http.ServerResponse) {
-  const allowed = process.env.WEB_ORIGIN;
-  const origin = (req.headers['origin'] as string) || '*';
-  const list = (allowed || '').split(',').map((s) => s.trim()).filter(Boolean);
-  const finalOrigin = list.length ? (list.includes(origin) ? origin : list[0]) : origin;
-  res.setHeader('Access-Control-Allow-Origin', finalOrigin);
+  const allowed = process.env.WEB_ORIGIN || '';
+  const origin = (req.headers['origin'] as string) || '';
+  const list = allowed.split(',').map((s) => s.trim()).filter(Boolean);
+  const ok = !!origin && list.some((p) => {
+    if (p === '*') return true;
+    if (p.includes('*')) {
+      const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+      return re.test(origin);
+    }
+    return p === origin;
+  });
+  if (ok) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  return ok;
 }
 
 const server = http.createServer(async (req, res) => {
-  setCors(req, res);
+  const ok = setCors(req, res);
   if (req.method === 'OPTIONS') {
     res.statusCode = 204;
+    res.end();
+    return;
+  }
+  if (!ok) {
+    res.statusCode = 403;
     res.end();
     return;
   }
