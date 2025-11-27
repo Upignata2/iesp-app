@@ -49,8 +49,15 @@ export default function Register() {
       setTimeout(() => {
         navigate("/login");
       }, 1500);
-    } catch (err) {
-      setError("Erro ao registrar. Verifique os dados.");
+    } catch (err: any) {
+      const code = String(err?.message || "");
+      const map: Record<string, string> = {
+        missing_fields: "Preencha nome, e-mail e senha",
+        invalid_fields: "E-mail inválido ou senha muito curta",
+        email_in_use: "E-mail já cadastrado",
+        database_unavailable: "Serviço indisponível no momento. Tente novamente"
+      };
+      setError(map[code] || "Erro ao registrar. Verifique os dados.");
     } finally {
       setIsLoading(false);
     }

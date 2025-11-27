@@ -12,7 +12,14 @@ async function api(path: string, payload?: any) {
     credentials: 'include',
     body: payload ? JSON.stringify(payload) : undefined,
   });
-  if (!res.ok) throw new Error('api');
+  if (!res.ok) {
+    let err = 'api';
+    try {
+      const data = await res.json();
+      err = data?.error || err;
+    } catch {}
+    throw new Error(err);
+  }
   return res.json();
 }
 

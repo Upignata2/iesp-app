@@ -23,8 +23,13 @@ export default function Login() {
     try {
       await login(email, password);
       navigate("/");
-    } catch (err) {
-      setError("Credenciais inválidas");
+    } catch (err: any) {
+      const code = String(err?.message || "");
+      const map: Record<string, string> = {
+        invalid_credentials: "Credenciais inválidas",
+        database_unavailable: "Serviço indisponível no momento. Tente novamente",
+      };
+      setError(map[code] || "Falha ao fazer login");
     } finally {
       setIsLoading(false);
     }
