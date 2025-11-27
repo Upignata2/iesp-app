@@ -115,13 +115,13 @@ export default function Profile() {
             <div>
               <p className="text-sm text-muted-foreground">Tipo de Conta</p>
               <p className="text-lg font-medium">
-                {user.role === "admin" ? "Administrador" : "Usuário"}
+                {(user as any)?.role === "admin" ? "Administrador" : "Usuário"}
               </p>
             </div>
             <div>
               <p className="text-sm text-muted-foreground">Membro desde</p>
               <p className="text-lg font-medium">
-                {new Date(user.createdAt).toLocaleDateString("pt-BR")}
+                {new Date((user as any)?.createdAt || Date.now()).toLocaleDateString("pt-BR")}
               </p>
             </div>
           </div>

@@ -15,16 +15,7 @@ export default function DonationWidget({ campaignId, campaignTitle }: DonationWi
   const [paymentMethod, setPaymentMethod] = useState<"pix" | "mercadopago" | "credit_card">("pix");
   const [showForm, setShowForm] = useState(false);
 
-  const donateMutation = trpc.campaigns.donate.useMutation({
-    onSuccess: () => {
-      alert("Doação realizada com sucesso! Obrigado por sua contribuição.");
-      setAmount("");
-      setShowForm(false);
-    },
-    onError: () => {
-      alert("Erro ao processar doação. Tente novamente.");
-    },
-  });
+  const donateMutation = trpc.campaigns.donate.useMutation();
 
   const handleDonate = async () => {
     if (!amount || parseFloat(amount) <= 0) {
@@ -37,6 +28,9 @@ export default function DonationWidget({ campaignId, campaignTitle }: DonationWi
       amount: Math.round(parseFloat(amount) * 100),
       paymentMethod,
     });
+    alert("Doação realizada com sucesso! Obrigado por sua contribuição.");
+    setAmount("");
+    setShowForm(false);
   };
 
   if (!showForm) {

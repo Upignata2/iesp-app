@@ -17,25 +17,19 @@ export default function FavoriteButton({
   onToggle,
 }: FavoriteButtonProps) {
   const [isLiked, setIsLiked] = useState(isFavorited);
-  const addFavoriteMutation = trpc.favorites.add.useMutation({
-    onSuccess: () => {
-      setIsLiked(true);
-      onToggle?.(true);
-    },
-  });
+  const addFavoriteMutation = trpc.favorites.add.useMutation();
 
-  const removeFavoriteMutation = trpc.favorites.remove.useMutation({
-    onSuccess: () => {
-      setIsLiked(false);
-      onToggle?.(false);
-    },
-  });
+  const removeFavoriteMutation = trpc.favorites.remove.useMutation();
 
   const handleToggle = () => {
     if (isLiked) {
       removeFavoriteMutation.mutate({ contentType, contentId });
+      setIsLiked(false);
+      onToggle?.(false);
     } else {
       addFavoriteMutation.mutate({ contentType, contentId });
+      setIsLiked(true);
+      onToggle?.(true);
     }
   };
 
