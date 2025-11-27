@@ -1,7 +1,7 @@
 function setCors(req: any, res: any) {
   const list = (process.env.WEB_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean);
   const origin = (req.headers.origin as string) || '';
-  const ok = !!origin && list.some((p) => {
+  let ok = !!origin && list.some((p) => {
     if (p === '*') return true;
     if (p.includes('*')) {
       const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
@@ -9,6 +9,7 @@ function setCors(req: any, res: any) {
     }
     return p === origin;
   });
+  if (!list.length && origin) ok = true;
   if (ok) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
