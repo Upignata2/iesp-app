@@ -18,7 +18,7 @@ async function api(path: string, payload?: any) {
 
 export function useAuth() {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<{ id?: number; name?: string; email?: string } | null>(null);
+  const [user, setUser] = useState<{ id?: number; name?: string; email?: string; role?: string; createdAt?: string } | null>(null);
   const isAuthenticated = !!user;
 
   useEffect(() => {
