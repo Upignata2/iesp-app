@@ -12,7 +12,7 @@ function setCors(req: any, res: any) {
   if (!list.length && origin) ok = true;
   if (ok) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Headers', 'content-type');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, x-vercel-protection-bypass');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
   return ok;
 }
