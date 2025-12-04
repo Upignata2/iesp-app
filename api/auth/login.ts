@@ -2,17 +2,16 @@ import { loginWithEmail } from '../../db';
 
 function setCors(req: any, res: any) {
   const list = (process.env.WEB_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean);
-  const origin = (req.headers.origin as string) || '';
-  let ok = !!origin && list.some((p) => {
+  const origin = (req.headers.origin as string) || (req.headers['x-forwarded-origin'] as string) || '';
+  let ok = (!!origin && list.some((p) => {
     if (p === '*') return true;
     if (p.includes('*')) {
       const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
       return re.test(origin);
     }
     return p === origin;
-  });
-  if (!list.length && origin) ok = true;
-  if (ok) res.setHeader('Access-Control-Allow-Origin', origin);
+  })) || (!list.length) || !origin || origin.includes('.vercel.app') || origin.startsWith('http://localhost') || origin.startsWith('http://127.0.0.1') || origin.startsWith('capacitor://');
+  if (ok) res.setHeader('Access-Control-Allow-Origin', origin || '*');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type, x-vercel-protection-bypass');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
