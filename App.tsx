@@ -36,7 +36,7 @@ function Router() {
         {() => (
           <MobileLayout>
             <Switch>
-              <Route path={"/"} component={Home} />
+              <Route path={"/home"} component={Home} />
               <Route path={"/profile"} component={Profile} />
               <Route path={"/articles"} component={Articles} />
               <Route path={"/news"} component={News} />
@@ -54,6 +54,11 @@ function Router() {
               <Route path={"/404"} component={NotFound} />
               {/* Final fallback route */}
               <Route component={NotFound} />
+      
+    
+    
+    
+    
             </Switch>
           </MobileLayout>
         )}
@@ -82,7 +87,12 @@ function App() {
         <TooltipProvider>
           <Toaster />
           {showSplash && <SplashScreen />}
-          <Router />
+          <Switch>
+            <Route path={"/"} component={Login} />
+            <Route>
+              {() => <Router />}
+            </Route>
+          </Switch>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

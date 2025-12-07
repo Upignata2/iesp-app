@@ -22,7 +22,7 @@ export default function Login() {
 
     try {
       await login(email, password);
-      navigate("/");
+      navigate("/home");
     } catch (err: any) {
       const code = String(err?.message || "");
       const map: Record<string, string> = {
@@ -36,8 +36,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-blue-700 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 bg-neutral-900 border-neutral-800 text-white">
         <div className="text-center mb-8">
           <img src={APP_LOGO} alt={APP_TITLE} className="w-20 h-20 mx-auto rounded-lg mb-4" />
           <h1 className="text-2xl font-bold">IESP</h1>
@@ -53,6 +53,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
+              className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-400"
             />
           </div>
           <div>
@@ -63,6 +64,7 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
+              className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-400"
             />
           </div>
 
@@ -75,31 +77,35 @@ export default function Login() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary hover:bg-blue-700 text-white"
+            className="w-full bg-gray-300 text-black hover:bg-gray-200"
           >
             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Entrar
           </Button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground">
+        <p className="text-center text-sm text-neutral-300">
           Não tem conta?{" "}
           <button
             onClick={() => navigate("/register")}
-            className="text-primary hover:underline font-medium"
+            className="text-white hover:underline font-medium"
           >
             Registre-se
           </button>
         </p>
 
-        <p className="text-center text-sm text-muted-foreground mt-4">
+        <p className="text-center text-sm text-neutral-300 mt-4">
           <button
             onClick={() => navigate("/forgot-password")}
-            className="text-primary hover:underline"
+            className="text-white hover:underline"
           >
             Esqueceu sua senha?
           </button>
         </p>
+
+        <div className="mt-6">
+          <Button variant="ghost" className="w-full text-white" onClick={() => navigate('/home')}>Continuar sem login</Button>
+        </div>
       </Card>
     </div>
   );

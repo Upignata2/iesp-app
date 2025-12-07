@@ -11,15 +11,15 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
   const [location, navigate] = useLocation();
 
   const navItems = [
-    { label: "Home", icon: Home, path: "/" },
+    { label: "Home", icon: Home, path: "/home" },
     { label: "Vídeos", icon: Video, path: "/videos" },
     { label: "Favoritos", icon: Star, path: "/favorites" },
     { label: "Menu", icon: Menu, path: "/menu" },
   ];
 
   const isActive = (path: string) => {
-    if (path === "/" && location === "/") return true;
-    if (path !== "/" && location.startsWith(path)) return true;
+    if (path === "/home" && location === "/home") return true;
+    if (path !== "/home" && location.startsWith(path)) return true;
     return false;
   };
 

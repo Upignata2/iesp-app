@@ -64,13 +64,13 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary to-blue-700 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md p-8">
+    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <Card className="w-full max-w-md p-8 !bg-neutral-900 !border-neutral-800 text-white">
         <div className="mb-6">
           <Button
             variant="ghost"
             onClick={() => navigate("/login")}
-            className="mb-4"
+            className="mb-4 text-white hover:bg-white/10"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Voltar
@@ -80,11 +80,11 @@ export default function Register() {
         <div className="text-center mb-8">
           <img src={APP_LOGO} alt={APP_TITLE} className="w-20 h-20 mx-auto rounded-lg mb-4" />
           <h1 className="text-2xl font-bold">Criar Conta</h1>
-          <p className="text-sm text-muted-foreground">IESP</p>
+          <p className="text-sm text-neutral-400">IESP</p>
         </div>
 
         {success && (
-          <div className="p-3 bg-green-50 border border-green-200 rounded text-green-800 text-sm mb-6">
+          <div className="p-3 bg-green-900/30 border border-green-700 rounded text-green-200 text-sm mb-6">
             Conta criada com sucesso! Redirecionando...
           </div>
         )}
@@ -99,6 +99,7 @@ export default function Register() {
               onChange={handleChange}
               placeholder="Seu Nome"
               required
+              className="!bg-neutral-800 !border-neutral-700 text-white placeholder:text-neutral-400"
             />
           </div>
 
@@ -111,6 +112,7 @@ export default function Register() {
               onChange={handleChange}
               placeholder="seu@email.com"
               required
+              className="!bg-neutral-800 !border-neutral-700 text-white placeholder:text-neutral-400"
             />
           </div>
 
@@ -123,6 +125,7 @@ export default function Register() {
               onChange={handleChange}
               placeholder="••••••••"
               required
+              className="!bg-neutral-800 !border-neutral-700 text-white placeholder:text-neutral-400"
             />
           </div>
 
@@ -135,11 +138,12 @@ export default function Register() {
               onChange={handleChange}
               placeholder="••••••••"
               required
+              className="!bg-neutral-800 !border-neutral-700 text-white placeholder:text-neutral-400"
             />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
+            <div className="p-3 bg-red-900/30 border border-red-700 rounded text-red-200 text-sm">
               {error}
             </div>
           )}
@@ -147,18 +151,18 @@ export default function Register() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary hover:bg-blue-700 text-white"
+            className="w-full !bg-gray-300 !text-black hover:bg-gray-200"
           >
             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
             Criar Conta
           </Button>
         </form>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
+        <p className="text-center text-sm text-neutral-400 mt-6">
           Já tem conta?{" "}
           <button
             onClick={() => navigate("/login")}
-            className="text-primary hover:underline font-medium"
+            className="text-gray-300 hover:underline font-medium"
           >
             Faça login
           </button>

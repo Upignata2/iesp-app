@@ -55,19 +55,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pb-24">
-      <div className="relative bg-gradient-to-b from-blue-700 to-blue-500 text-white">
-        <div className="max-w-6xl mx-auto px-6 py-12 text-center">
-          <img src={APP_LOGO} alt={APP_TITLE} className="w-16 h-16 mx-auto rounded-lg mb-4" />
-          <div className="text-sm opacity-90">Igreja Smart</div>
-          <h1 className="text-3xl font-bold mt-2">Crie agora mesmo</h1>
-          <h2 className="text-3xl font-bold">o app da sua igreja!</h2>
-        </div>
-        <div className="absolute right-4 top-6 w-4 h-4 bg-white/70 rounded-sm" />
-      </div>
-
-      <div className="bg-teal-900/30 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="min-h-screen pb-24 bg-blue-700">
+      <div className="max-w-6xl mx-auto px-4 py-6">
           {!isAuthenticated ? (
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-3">
@@ -93,15 +82,14 @@ export default function Home() {
               const Icon = item.icon;
               return (
                 <button key={item.id} onClick={() => handleClick(item.route)} className="flex flex-col items-center gap-2">
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center ${item.color} bg-opacity-80 text-white`}> 
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center border border-white text-white bg-blue-600/70`}> 
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className="text-xs text-white/90">{item.label}</span>
+                  <span className="text-xs text-black">{item.label}</span>
                 </button>
               );
             })}
           </div>
-        </div>
       </div>
     </div>
   );
