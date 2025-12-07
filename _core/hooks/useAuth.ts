@@ -13,12 +13,25 @@ async function api(path: string, payload?: any) {
     body: payload ? JSON.stringify(payload) : undefined,
   });
   if (!res.ok) {
-    let err = 'api';
-    try {
-      const data = await res.json();
-      err = data?.error || err;
-    } catch {}
-    throw new Error(err);
+    const ct = res.headers.get('content-type') || '';
+    if (ct.includes('application/json')) {
+      try {
+        const data = await res.json();
+        throw new Error(String(data?.error || 'api'));
+      } catch {
+        throw new Error('api');
+      }
+    }
+    const code = res.status;
+    const map: Record<number, string> = {
+      503: 'database_unavailable',
+      409: 'email_in_use',
+      401: 'invalid_credentials',
+      405: 'method_not_allowed',
+      404: 'not_found',
+      403: 'forbidden',
+    };
+    throw new Error(map[code] || 'api');
   }
   return res.json();
 }

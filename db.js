@@ -9,7 +9,7 @@ let _db = null;
 export async function getDb() {
     if (!_db && process.env.DATABASE_URL) {
         try {
-            const client = postgres(process.env.DATABASE_URL, { ssl: 'require' });
+            const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
             _db = drizzle(client);
         }
         catch (error) {
