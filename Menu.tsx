@@ -71,12 +71,21 @@ export default function Menu() {
         )}
 
         {!isAuthenticated && (
-          <Button 
-            className="w-full bg-primary hover:bg-blue-700 text-white"
-            onClick={() => navigate('/login')}
-          >
-            Entrar
-          </Button>
+          <div className="space-y-2">
+            <Button 
+              className="w-full bg-primary hover:bg-blue-700 text-white"
+              onClick={() => navigate('/login')}
+            >
+              Entrar
+            </Button>
+            <Button 
+              variant="secondary"
+              className="w-full"
+              onClick={() => navigate('/register')}
+            >
+              Registrar
+            </Button>
+          </div>
         )}
       </div>
     </div>

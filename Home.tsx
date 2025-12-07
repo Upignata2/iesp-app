@@ -70,7 +70,10 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 py-6">
           {!isAuthenticated ? (
             <div className="text-center mb-6">
-              <Button size="lg" className="bg-white text-blue-700" onClick={() => navigate('/login')}>Login</Button>
+              <div className="flex items-center justify-center gap-3">
+                <Button size="lg" className="bg-white text-blue-700" onClick={() => navigate('/login')}>Login</Button>
+                <Button size="lg" variant="secondary" className="bg-white/90 text-blue-700" onClick={() => navigate('/register')}>Registrar</Button>
+              </div>
               <div className="mt-3">
                 <Button variant="ghost" onClick={() => navigate('/')}>Continuar sem login</Button>
               </div>
