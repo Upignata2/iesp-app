@@ -1,15 +1,16 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { users, articles, news, events, hymns, dailyWords, prayerReasons, serviceSchedules, galleryItems, contactSubmissions, campaigns, campaignDonations, userFavorites } from "./schema";
-import { ENV } from './_core/env';
+import { users, articles, news, events, hymns, dailyWords, prayerReasons, serviceSchedules, galleryItems, contactSubmissions, campaigns, campaignDonations, userFavorites } from "./schema.js";
+import { ENV } from './_core/env.js';
 import crypto from "crypto";
 let _db = null;
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
     if (!_db && process.env.DATABASE_URL) {
         try {
-            const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
+            const isLocal = /\blocalhost\b|\b127\.0\.0\.1\b/.test(process.env.DATABASE_URL);
+            const client = isLocal ? postgres(process.env.DATABASE_URL) : postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
             _db = drizzle(client);
         }
         catch (error) {
