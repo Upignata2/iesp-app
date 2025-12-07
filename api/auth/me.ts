@@ -4,16 +4,18 @@ function setCors(req: VercelRequest, res: VercelResponse) {
   const allowed = process.env.WEB_ORIGIN || '';
   const origin = (req.headers['origin'] as string) || '';
   const list = allowed.split(',').map((s) => s.trim()).filter(Boolean);
-  let ok = !!origin && list.some((p) => {
-    if (p === '*') return true;
-    if (p.includes('*')) {
-      const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-      return re.test(origin);
-    }
-    return p === origin;
-  });
-  if (!list.length && origin) ok = true;
-  if (ok) res.setHeader('Access-Control-Allow-Origin', origin);
+  let ok = true;
+  if (list.length) {
+    ok = !!origin && list.some((p) => {
+      if (p === '*') return true;
+      if (p.includes('*')) {
+        const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
+        return re.test(origin);
+      }
+      return p === origin;
+    });
+  }
+  if (ok && origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
@@ -34,4 +36,3 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try { user = JSON.parse(value); } catch {}
   res.status(200).json({ user });
 }
-
