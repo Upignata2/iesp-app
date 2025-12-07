@@ -58,33 +58,37 @@ async function readBody(req: VercelRequest) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const ok = setCors(req, res);
-  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
-  if (!ok) { res.status(403).end(); return; }
-
-  if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
-
   try {
-    const body = await readBody(req);
-    const name = String(body?.name || '').trim();
-    const email = String(body?.email || '').trim();
-    const password = String(body?.password || '');
-    if (!name || !email || !password) {
-      res.status(400).json({ success: false, error: 'missing_fields' });
-      return;
+    const ok = setCors(req, res);
+    if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+    if (!ok) { res.status(403).end(); return; }
+
+    if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
+
+    try {
+      const body = await readBody(req);
+      const name = String(body?.name || '').trim();
+      const email = String(body?.email || '').trim();
+      const password = String(body?.password || '');
+      if (!name || !email || !password) {
+        res.status(400).json({ success: false, error: 'missing_fields' });
+        return;
+      }
+      const emailOk = /.+@.+\..+/.test(email);
+      const passOk = password.length >= 6;
+      if (!emailOk || !passOk) {
+        res.status(400).json({ success: false, error: 'invalid_fields' });
+        return;
+      }
+      await registerUserWithEmail(name, email, password);
+      res.status(200).json({ success: true });
+    } catch (e: any) {
+      const msg = String(e?.message || '');
+      if (msg.includes('Email already exists')) { res.status(409).json({ success: false, error: 'email_in_use' }); return; }
+      res.status(503).json({ success: false, error: 'database_unavailable' });
     }
-    const emailOk = /.+@.+\..+/.test(email);
-    const passOk = password.length >= 6;
-    if (!emailOk || !passOk) {
-      res.status(400).json({ success: false, error: 'invalid_fields' });
-      return;
-    }
-    await registerUserWithEmail(name, email, password);
-    res.status(200).json({ success: true });
-  } catch (e: any) {
-    const msg = String(e?.message || '');
-    if (msg.includes('Email already exists')) { res.status(409).json({ success: false, error: 'email_in_use' }); return; }
-    res.status(503).json({ success: false, error: 'database_unavailable' });
+  } catch {
+    res.status(500).json({ success: false, error: 'api' });
   }
 }
 

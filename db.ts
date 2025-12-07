@@ -14,8 +14,14 @@ export async function getDb() {
       const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
       _db = drizzle(client);
     } catch (error) {
-      console.warn("[Database] Failed to connect:", error);
-      _db = null;
+      console.warn("[Database] Failed to connect (RA=false), retrying with 'require'...", error);
+      try {
+        const client2 = postgres(process.env.DATABASE_URL, { ssl: 'require' });
+        _db = drizzle(client2);
+      } catch (error2) {
+        console.warn("[Database] Fallback connect failed:", error2);
+        _db = null;
+      }
     }
   }
   return _db;

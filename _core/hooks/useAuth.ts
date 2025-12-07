@@ -25,11 +25,13 @@ async function api(path: string, payload?: any) {
     const code = res.status;
     const map: Record<number, string> = {
       503: 'database_unavailable',
+      500: 'database_unavailable',
       409: 'email_in_use',
       401: 'invalid_credentials',
       405: 'method_not_allowed',
       404: 'not_found',
       403: 'forbidden',
+      400: 'invalid_fields',
     };
     throw new Error(map[code] || 'api');
   }
