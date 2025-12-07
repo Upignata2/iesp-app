@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-// import moved to dynamic inside handler to avoid import-time failures
 
 function originMatches(origin: string, token: string) {
   if (token === '*') return true;
