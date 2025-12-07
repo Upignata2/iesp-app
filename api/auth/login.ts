@@ -1,21 +1,38 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { loginWithEmail } from '../../db';
 
+function originMatches(origin: string, token: string) {
+  if (token === '*') return true;
+  const hasScheme = token.includes('://');
+  if (token.includes('*')) {
+    const pattern = '^' + token.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$';
+    const re = new RegExp(pattern);
+    if (hasScheme) return re.test(origin);
+    try {
+      const host = new URL(origin).host;
+      return re.test(host);
+    } catch {
+      return re.test(origin);
+    }
+  }
+  if (hasScheme) return token === origin;
+  try {
+    const host = new URL(origin).host;
+    return token === host;
+  } catch {
+    return token === origin;
+  }
+}
+
 function setCors(req: VercelRequest, res: VercelResponse) {
   const allowed = process.env.WEB_ORIGIN || '';
   const origin = (req.headers['origin'] as string) || '';
   const list = allowed.split(',').map((s) => s.trim()).filter(Boolean);
   let ok = true;
   if (list.length) {
-    ok = !!origin && list.some((p) => {
-      if (p === '*') return true;
-      if (p.includes('*')) {
-        const re = new RegExp('^' + p.replace(/\./g, '\\.').replace(/\*/g, '.*') + '$');
-        return re.test(origin);
-      }
-      return p === origin;
-    });
+    ok = !!origin && list.some((p) => originMatches(origin, p));
   }
+  if (!list.length && origin) ok = true;
   if (ok && origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
