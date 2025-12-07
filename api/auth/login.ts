@@ -58,26 +58,30 @@ async function readBody(req: VercelRequest) {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const ok = setCors(req, res);
-  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
-  if (!ok) { res.status(403).end(); return; }
-  if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
-
   try {
-    const body = await readBody(req);
-    const email = String(body?.email || '').trim();
-    const password = String(body?.password || '');
-    const user = await loginWithEmail(email, password);
-    const origin = (req.headers['origin'] as string) || '';
-    const secure = origin.startsWith('https://');
-    const sameSite = secure ? 'SameSite=None' : 'SameSite=Lax';
-    const secureFlag = secure ? '; Secure' : '';
-    const cookie = `session=${encodeURIComponent(JSON.stringify(user))}; Path=/; HttpOnly; Max-Age=31536000; ${sameSite}${secureFlag}`;
-    res.setHeader('Set-Cookie', cookie);
-    res.status(200).json({ success: true, user });
-  } catch (e: any) {
-    const msg = String(e?.message || '');
-    if (msg.includes('Invalid credentials')) { res.status(401).json({ success: false, error: 'invalid_credentials' }); return; }
-    res.status(503).json({ success: false, error: 'database_unavailable' });
+    const ok = setCors(req, res);
+    if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+    if (!ok) { res.status(403).end(); return; }
+    if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
+
+    try {
+      const body = await readBody(req);
+      const email = String(body?.email || '').trim();
+      const password = String(body?.password || '');
+      const user = await loginWithEmail(email, password);
+      const origin = (req.headers['origin'] as string) || '';
+      const secure = origin.startsWith('https://');
+      const sameSite = secure ? 'SameSite=None' : 'SameSite=Lax';
+      const secureFlag = secure ? '; Secure' : '';
+      const cookie = `session=${encodeURIComponent(JSON.stringify(user))}; Path=/; HttpOnly; Max-Age=31536000; ${sameSite}${secureFlag}`;
+      res.setHeader('Set-Cookie', cookie);
+      res.status(200).json({ success: true, user });
+    } catch (e: any) {
+      const msg = String(e?.message || '');
+      if (msg.includes('Invalid credentials')) { res.status(401).json({ success: false, error: 'invalid_credentials' }); return; }
+      res.status(503).json({ success: false, error: 'database_unavailable' });
+    }
+  } catch {
+    res.status(500).json({ success: false, error: 'api' });
   }
 }
