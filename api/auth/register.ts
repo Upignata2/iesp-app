@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { registerUserWithEmail } from '../../db';
 
 function originMatches(origin: string, token: string) {
   if (token === '*') return true;
@@ -65,7 +66,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
 
     try {
-      const { registerUserWithEmail } = await import('../../db');
       const body = await readBody(req);
       const name = String(body?.name || '').trim();
       const email = String(body?.email || '').trim();
