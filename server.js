@@ -2,7 +2,7 @@ import 'dotenv/config';
 import http from 'http';
 import { URL } from 'url';
 const COOKIE_NAME = 'session';
-const dbPromise = import('./db');
+const dbPromise = import('./db.js');
 function readBody(req) {
     return new Promise((resolve) => {
         let data = '';
@@ -38,8 +38,10 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ success: true }));
         }
         catch (e) {
+            console.error('[register]', e);
             res.statusCode = 400;
-            res.end(JSON.stringify({ success: false }));
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ success: false, error: (e && e.message) ? e.message : 'error' }));
         }
         return;
     }
@@ -59,8 +61,10 @@ const server = http.createServer(async (req, res) => {
             res.end(JSON.stringify({ success: true, user }));
         }
         catch (e) {
+            console.error('[login]', e);
             res.statusCode = 401;
-            res.end(JSON.stringify({ success: false }));
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ success: false, error: (e && e.message) ? e.message : 'error' }));
         }
         return;
     }
@@ -95,3 +99,4 @@ const port = process.env.PORT ? Number(process.env.PORT) : 5174;
 server.listen(port, () => {
     console.log(`API server listening on http://localhost:${port}`);
 });
+
