@@ -47,7 +47,13 @@ async function readBody(req: VercelRequest) {
     }
     return b;
   }
-  return {} as any;
+  return new Promise<any>((resolve) => {
+    let data = '';
+    req.on('data', (chunk) => (data += chunk));
+    req.on('end', () => {
+      try { resolve(JSON.parse(data)); } catch { resolve({}); }
+    });
+  });
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -56,10 +62,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method === 'OPTIONS') { res.status(204).end(); return; }
     if (!ok) { res.status(403).end(); return; }
     if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
-    const body = await readBody(req);
-    const email = String((body as any)?.email || '').trim();
-    const password = String((body as any)?.password || '');
-    res.status(503).json({ success: false, error: 'database_unavailable' });
+    try {
+      const { loginWithEmail } = await import('../../db');
+      const body = await readBody(req);
+      const email = String(body?.email || '').trim();
+      const password = String(body?.password || '');
+      const user = await loginWithEmail(email, password);
+      const origin = (req.headers['origin'] as string) || '';
+      const secure = origin.startsWith('https://');
+      const sameSite = secure ? 'SameSite=None' : 'SameSite=Lax';
+      const secureFlag = secure ? '; Secure' : '';
+      const cookie = `session=${encodeURIComponent(JSON.stringify(user))}; Path=/; HttpOnly; Max-Age=31536000; ${sameSite}${secureFlag}`;
+      res.setHeader('Set-Cookie', cookie);
+      res.status(200).json({ success: true, user });
+    } catch (e: any) {
+      const msg = String(e?.message || '');
+      if (msg.includes('Invalid credentials')) { res.status(401).json({ success: false, error: 'invalid_credentials' }); return; }
+      res.status(503).json({ success: false, error: 'database_unavailable' });
+    }
   } catch {
     res.status(500).json({ success: false, error: 'api' });
   }
