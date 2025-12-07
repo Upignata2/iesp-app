@@ -50,13 +50,44 @@ const server = http.createServer(async (req, res) => {
     try {
       const raw = await readBody(req);
       const body = raw ? JSON.parse(raw) : {};
+      const name = String(body?.name || '').trim();
+      const email = String(body?.email || '').trim();
+      const password = String(body?.password || '');
+      if (!name || !email || !password) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: false, error: 'missing_fields' }));
+        return;
+      }
+      const emailOk = /.+@.+\..+/.test(email);
+      const passOk = password.length >= 6;
+      if (!emailOk || !passOk) {
+        res.statusCode = 400;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: false, error: 'invalid_fields' }));
+        return;
+      }
       const { registerUserWithEmail } = await dbPromise;
-      await registerUserWithEmail(body.name, body.email, body.password);
+      await registerUserWithEmail(name, email, password);
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify({ success: true }));
-    } catch (e) {
-      res.statusCode = 400;
-      res.end(JSON.stringify({ success: false }));
+    } catch (e: any) {
+      const msg = String(e?.message || '');
+      if (msg.includes('Email already exists')) {
+        res.statusCode = 409;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: false, error: 'email_in_use' }));
+        return;
+      }
+      if (msg.includes('Database not available')) {
+        res.statusCode = 503;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({ success: false, error: 'database_unavailable' }));
+        return;
+      }
+      res.statusCode = 500;
+      res.setHeader('Content-Type', 'application/json');
+      res.end(JSON.stringify({ success: false, error: 'unknown' }));
     }
     return;
   }
