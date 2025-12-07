@@ -78,7 +78,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   } catch (e: any) {
     const msg = String(e?.message || '');
     if (msg.includes('Invalid credentials')) { res.status(401).json({ success: false, error: 'invalid_credentials' }); return; }
-    if (msg.includes('Database not available')) { res.status(503).json({ success: false, error: 'database_unavailable' }); return; }
-    res.status(500).json({ success: false, error: 'unknown' });
+    res.status(503).json({ success: false, error: 'database_unavailable' });
   }
 }
