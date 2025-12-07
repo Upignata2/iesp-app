@@ -41,9 +41,9 @@ function setCors(req: http.IncomingMessage, res: http.ServerResponse) {
   const list = allowed.split(',').map((s) => s.trim()).filter(Boolean);
   let ok = true;
   if (list.length) {
-    ok = !!origin && list.some((p) => originMatches(origin, p));
+    ok = !origin || list.some((p) => originMatches(origin, p));
   }
-  if (!list.length && origin) ok = true;
+  if (!list.length) ok = true;
   if (ok && origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Headers', 'content-type');
