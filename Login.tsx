@@ -17,19 +17,23 @@ export default function Login() {
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Login form submitted");
     setIsLoading(true);
     setError("");
 
     try {
+      console.log("Calling login API...");
       await login(email, password);
+      console.log("Login successful, navigating to home");
       navigate("/home");
     } catch (err: any) {
+      console.error("Login failed:", err);
       const code = String(err?.message || "");
       const map: Record<string, string> = {
         invalid_credentials: "Credenciais inválidas",
         database_unavailable: "Serviço indisponível no momento. Tente novamente",
       };
-      setError(map[code] || "Falha ao fazer login");
+      setError(map[code] || "Falha ao fazer login: " + code);
     } finally {
       setIsLoading(false);
     }
