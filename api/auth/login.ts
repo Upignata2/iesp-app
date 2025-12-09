@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { loginWithEmail } from '../../db';
 
 function originMatches(origin: string, token: string) {
   if (token === '*') return true;
@@ -67,6 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const body = await readBody(req);
       const email = String(body?.email || '').trim();
       const password = String(body?.password || '');
+      const { loginWithEmail } = await import('../../db');
       const user = await loginWithEmail(email, password);
       const origin = (req.headers['origin'] as string) || '';
       const secure = origin.startsWith('https://');
@@ -77,8 +77,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       res.status(200).json({ success: true, user });
     } catch (e: any) {
       const msg = String(e?.message || '');
+      console.error('[api/auth/login]', e);
       if (msg.includes('Invalid credentials')) { res.status(401).json({ success: false, error: 'invalid_credentials' }); return; }
-      res.status(503).json({ success: false, error: 'database_unavailable' });
+      if (msg.includes('Database not available')) { res.status(503).json({ success: false, error: 'database_unavailable' }); return; }
+      const detail = process.env.DEBUG_ERRORS === '1' ? { error_detail: msg } : {};
+      res.status(500).json({ success: false, error: 'unknown', ...detail });
     }
   } catch {
     res.status(500).json({ success: false, error: 'api' });

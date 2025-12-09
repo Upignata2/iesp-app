@@ -1,5 +1,4 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { registerUserWithEmail } from '../../db';
 
 function originMatches(origin: string, token: string) {
   if (token === '*') return true;
@@ -80,12 +79,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(400).json({ success: false, error: 'invalid_fields' });
         return;
       }
+      const { registerUserWithEmail } = await import('../../db');
       await registerUserWithEmail(name, email, password);
       res.status(200).json({ success: true });
     } catch (e: any) {
       const msg = String(e?.message || '');
+      console.error('[api/auth/register]', e);
       if (msg.includes('Email already exists')) { res.status(409).json({ success: false, error: 'email_in_use' }); return; }
-      res.status(503).json({ success: false, error: 'database_unavailable' });
+      if (msg.includes('Database not available')) { res.status(503).json({ success: false, error: 'database_unavailable' }); return; }
+      const detail = process.env.DEBUG_ERRORS === '1' ? { error_detail: msg } : {};
+      res.status(500).json({ success: false, error: 'unknown', ...detail });
     }
   } catch {
     res.status(500).json({ success: false, error: 'api' });

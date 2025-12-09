@@ -242,4 +242,3 @@ CREATE TABLE IF NOT EXISTS "userFavorites" (
 
 CREATE INDEX IF NOT EXISTS idx_user_favorites_user ON "userFavorites" ("userId");
 CREATE INDEX IF NOT EXISTS idx_user_favorites_content ON "userFavorites" ("contentType","contentId");
-
