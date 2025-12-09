@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCors } from '../cors.js';
+import { setCors } from '../cors';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const ok = setCors(req, res);
