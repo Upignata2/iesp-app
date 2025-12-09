@@ -11,17 +11,21 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      // Force disable prepare for Supabase Transaction Pooler
+      console.log("[Database] Attempting to connect (RA=false)...");
       const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false }, prepare: false });
       _db = drizzle(client);
+      console.log("[Database] Connected successfully (RA=false).");
     } catch (error) {
       console.warn("[Database] Failed to connect (RA=false), retrying with 'require'...", error);
       try {
+        console.log("[Database] Attempting to connect (RA='require')...");
         const client2 = postgres(process.env.DATABASE_URL, { ssl: 'require', prepare: false });
         _db = drizzle(client2);
+        console.log("[Database] Connected successfully (RA='require').");
       } catch (error2) {
         console.warn("[Database] Fallback connect failed:", error2);
         _db = null;
+        console.error("[Database] Failed to establish any database connection.");
       }
     }
   }
@@ -84,9 +88,14 @@ export async function getUserByOpenId(openId: string) {
 }
 
 export async function getUserByEmail(email: string) {
+  console.log(`[Database] getUserByEmail: Searching for email: ${email}`);
   const db = await getDb();
-  if (!db) return undefined;
+  if (!db) {
+    console.warn("[Database] getUserByEmail: Database not available.");
+    return undefined;
+  }
   const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  console.log(`[Database] getUserByEmail: Result for ${email}:`, result);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -100,10 +109,12 @@ function hashWithSalt(password: string, salt: string) {
 }
 
 export async function registerUserWithEmail(name: string, email: string, password: string) {
+  console.log(`[Database] registerUserWithEmail: Attempting to register user: ${email}`);
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const existing = await getUserByEmail(email);
+  console.log(`[Database] registerUserWithEmail: Existing user check for ${email}:`, existing);
   if (existing) throw new Error("Email already exists");
 
   const salt = createSalt();
