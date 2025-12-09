@@ -56,6 +56,8 @@ async function readBody(req: VercelRequest) {
   });
 }
 
+import { loginWithEmail } from '../../db.js';
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const ok = setCors(req, res);
@@ -66,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const body = await readBody(req);
       const email = String(body?.email || '').trim();
       const password = String(body?.password || '');
-      const { loginWithEmail } = await import('../../db.js');
+      
       const user = await loginWithEmail(email, password);
       const origin = (req.headers['origin'] as string) || '';
       const secure = origin.startsWith('https://');
@@ -80,7 +82,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('[api/auth/login]', e);
       if (msg.includes('Invalid credentials')) { res.status(401).json({ success: false, error: 'invalid_credentials' }); return; }
       if (msg.includes('Database not available')) { res.status(503).json({ success: false, error: 'database_unavailable' }); return; }
-      const detail = process.env.DEBUG_ERRORS === '1' ? { error_detail: msg } : {};
+      
+      const detail = { error_detail: msg };
       res.status(500).json({ success: false, error: 'unknown', ...detail });
     }
   } catch {

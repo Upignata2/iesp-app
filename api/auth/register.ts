@@ -56,6 +56,8 @@ async function readBody(req: VercelRequest) {
   });
 }
 
+import { registerUserWithEmail } from '../../db.js';
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const ok = setCors(req, res);
@@ -79,19 +81,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(400).json({ success: false, error: 'invalid_fields' });
         return;
       }
-      const { registerUserWithEmail } = await import('../../db.js');
+      
       await registerUserWithEmail(name, email, password);
       res.status(200).json({ success: true });
     } catch (e: any) {
       const msg = String(e?.message || '');
       console.error('[api/auth/register]', e);
-      if (msg.includes('Email already exists')) { res.status(409).json({ success: false, error: 'email_in_use' }); return; }
-      if (msg.includes('Database not available')) { res.status(503).json({ success: false, error: 'database_unavailable' }); return; }
-      const detail = process.env.DEBUG_ERRORS === '1' ? { error_detail: msg } : {};
-      res.status(500).json({ success: false, error: 'unknown', ...detail });
+      
+      // Retorna o erro real para debug
+      const errorResponse = {
+        success: false,
+        error: 'unknown',
+        error_message: msg,
+        error_stack: e?.stack
+      };
+
+      if (msg.includes('Email already exists')) { 
+        res.status(409).json({ success: false, error: 'email_in_use' }); 
+        return; 
+      }
+      if (msg.includes('Database not available')) { 
+        res.status(503).json({ ...errorResponse, error: 'database_unavailable' }); 
+        return; 
+      }
+      
+      res.status(500).json(errorResponse);
     }
-  } catch {
-    res.status(500).json({ success: false, error: 'api' });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: 'api_critical', message: err?.message });
   }
 }
 
