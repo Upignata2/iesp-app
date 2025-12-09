@@ -44,10 +44,20 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await register(formData.name, formData.email, formData.password);
+      // Create a timeout promise
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Timeout: O servidor não está respondendo. Verifique sua conexão.")), 10000)
+      );
+
+      // Race the register call against the timeout
+      await Promise.race([
+        register(formData.name, formData.email, formData.password),
+        timeoutPromise
+      ]);
+
       setSuccess(true);
       setTimeout(() => {
-        navigate("/login");
+        window.location.href = "/login";
       }, 1500);
     } catch (err: any) {
       const code = String(err?.message || "");
