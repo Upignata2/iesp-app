@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { setCors } from '../cors';
-import { registerUserWithEmail } from '../../db';
+import { setCors } from '../cors.js';
+import { registerUserWithEmail } from '../../db.js';
 
 async function readBody(req: VercelRequest) {
   if ((req as any).body) {
