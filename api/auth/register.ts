@@ -79,7 +79,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.status(400).json({ success: false, error: 'invalid_fields' });
         return;
       }
-      const { registerUserWithEmail } = await import('../../db');
+      const { registerUserWithEmail } = await import('../../db.js');
       await registerUserWithEmail(name, email, password);
       res.status(200).json({ success: true });
     } catch (e: any) {

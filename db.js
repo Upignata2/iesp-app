@@ -10,7 +10,7 @@ export async function getDb() {
     if (!_db && process.env.DATABASE_URL) {
         try {
             const isLocal = /\blocalhost\b|\b127\.0\.0\.1\b/.test(process.env.DATABASE_URL);
-            const client = isLocal ? postgres(process.env.DATABASE_URL) : postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
+            const client = isLocal ? postgres(process.env.DATABASE_URL) : postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false }, prepare: false });
             _db = drizzle(client);
         }
         catch (error) {

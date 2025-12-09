@@ -11,12 +11,12 @@ let _db: ReturnType<typeof drizzle> | null = null;
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
+      const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false }, prepare: false });
       _db = drizzle(client);
     } catch (error) {
       console.warn("[Database] Failed to connect (RA=false), retrying with 'require'...", error);
       try {
-        const client2 = postgres(process.env.DATABASE_URL, { ssl: 'require' });
+        const client2 = postgres(process.env.DATABASE_URL, { ssl: 'require', prepare: false });
         _db = drizzle(client2);
       } catch (error2) {
         console.warn("[Database] Fallback connect failed:", error2);

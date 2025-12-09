@@ -66,7 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const body = await readBody(req);
       const email = String(body?.email || '').trim();
       const password = String(body?.password || '');
-      const { loginWithEmail } = await import('../../db');
+      const { loginWithEmail } = await import('../../db.js');
       const user = await loginWithEmail(email, password);
       const origin = (req.headers['origin'] as string) || '';
       const secure = origin.startsWith('https://');
