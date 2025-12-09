@@ -9,14 +9,17 @@ let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  const connectionString = process.env.DATABASE_URL || "postgresql://postgres:1819010620Pig.@db.ugybcgubtvrjyodcegei.supabase.co:6543/postgres?sslmode=require";
+  
+  if (!_db && connectionString) {
     try {
-      const client = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false }, prepare: false });
+      // Force disable prepare for Supabase Transaction Pooler
+      const client = postgres(connectionString, { ssl: { rejectUnauthorized: false }, prepare: false });
       _db = drizzle(client);
     } catch (error) {
       console.warn("[Database] Failed to connect (RA=false), retrying with 'require'...", error);
       try {
-        const client2 = postgres(process.env.DATABASE_URL, { ssl: 'require', prepare: false });
+        const client2 = postgres(connectionString, { ssl: 'require', prepare: false });
         _db = drizzle(client2);
       } catch (error2) {
         console.warn("[Database] Fallback connect failed:", error2);
