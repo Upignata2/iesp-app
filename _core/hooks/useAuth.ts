@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 
 const STORAGE_KEY_SESSION = 'iesp_session_user';
 
-// Use relative path by default to avoid CORS issues and ensure we hit the same deployment
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+// Force relative path to ensure we hit the same domain (no CORS)
+const API_BASE = '';
 
 async function api(path: string, payload?: any) {
   const url = API_BASE ? `${API_BASE}${path}` : path;
