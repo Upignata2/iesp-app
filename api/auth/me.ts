@@ -26,16 +26,33 @@ function originMatches(origin: string, token: string) {
 function setCors(req: VercelRequest, res: VercelResponse) {
   const allowed = process.env.WEB_ORIGIN || '';
   const origin = (req.headers['origin'] as string) || '';
-  const list = allowed.split(',').map((s) => s.trim()).filter(Boolean);
-  let ok = true;
+  
+  // Always allow localhost and vercel app
+  const defaultAllowed = ['http://localhost:5173', 'http://localhost:5174', 'https://iesp.vercel.app', 'https://iesp-app.vercel.app'];
+  
+  const list = [...allowed.split(',').map((s) => s.trim()).filter(Boolean), ...defaultAllowed];
+  
+  let ok = false;
   if (list.length) {
     ok = !origin || list.some((p) => originMatches(origin, p));
   }
-  if (!list.length) ok = true;
-  if (ok && origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  
+  // If no origin, allow (server-to-server or direct access)
+  if (!origin) ok = true;
+  
+  if (ok && origin) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+  } else if (origin) {
+    // If not explicitly allowed but present, try to allow it if it matches our domain patterns
+    if (origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      ok = true;
+    }
+  }
+
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Headers', 'content-type');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, authorization, cookie');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
   return ok;
 }
 
