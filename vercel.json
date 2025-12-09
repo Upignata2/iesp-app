@@ -14,7 +14,7 @@
   ],
   "functions": {
     "api/**/*.ts": {
-      "includeFiles": "db.js,schema.js,api/cors.ts,_core/**"
+      "includeFiles": "db.ts,schema.ts,api/cors.ts,_core/**"
     }
   },
   "rewrites": [
