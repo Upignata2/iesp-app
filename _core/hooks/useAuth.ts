@@ -84,7 +84,7 @@ export function useAuth() {
     setLoading(true);
     try {
       const data = await api('/api/auth/register', { name, email, password });
-      if (!data?.success) throw new Error('Erro ao registrar');
+      if (!data?.success) throw new Error(data?.error || 'Erro ao registrar');
       return true;
     } finally {
       setLoading(false);

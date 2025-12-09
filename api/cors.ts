@@ -60,6 +60,7 @@ export function setCors(req: VercelRequest, res: VercelResponse) {
   // Handle preflight directly in CORS helper if method is OPTIONS
   if (req.method === 'OPTIONS') {
     res.status(204).end();
+
     return true; // Return true to indicate handled
   }
   
