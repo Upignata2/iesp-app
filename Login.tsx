@@ -25,7 +25,7 @@ export default function Login() {
       console.log("Calling login API...");
       await login(email, password);
       console.log("Login successful, navigating to home");
-      navigate("/home");
+      window.location.href = "/home";
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");
