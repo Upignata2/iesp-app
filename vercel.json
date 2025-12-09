@@ -4,9 +4,6 @@
   "functions": {
     "api/**/*.ts": {
       "includeFiles": "db.js,schema.js,_core/**"
-    },
-    "api/**/*.js": {
-      "includeFiles": "db.js,schema.js,_core/**"
     }
   },
   "rewrites": [
