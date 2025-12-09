@@ -7,12 +7,10 @@ import crypto from "crypto";
 let _db = null;
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-    const connectionString = process.env.DATABASE_URL || "postgresql://postgres:1819010620Pig.@db.ugybcgubtvrjyodcegei.supabase.co:6543/postgres?sslmode=require";
-    
-    if (!_db && connectionString) {
+    if (!_db && process.env.DATABASE_URL) {
         try {
-            const isLocal = /\blocalhost\b|\b127\.0\.0\.1\b/.test(connectionString);
-            const client = isLocal ? postgres(connectionString) : postgres(connectionString, { ssl: { rejectUnauthorized: false }, prepare: false });
+            const isLocal = /\blocalhost\b|\b127\.0\.0\.1\b/.test(process.env.DATABASE_URL);
+            const client = isLocal ? postgres(process.env.DATABASE_URL) : postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false }, prepare: false });
             _db = drizzle(client);
         }
         catch (error) {
