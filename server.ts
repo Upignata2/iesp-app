@@ -1,4 +1,5 @@
 import 'dotenv/config';
+console.log("Starting server...");
 import http from 'http';
 import { URL } from 'url';
 const COOKIE_NAME = 'session';

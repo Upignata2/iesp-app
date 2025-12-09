@@ -23,7 +23,15 @@ export default function Login() {
 
     try {
       console.log("Calling login API...");
-      await login(email, password);
+      
+      // Create a timeout promise
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error("Timeout: O servidor não está respondendo. Verifique sua conexão.")), 10000)
+      );
+
+      // Race the login call against the timeout
+      await Promise.race([login(email, password), timeoutPromise]);
+      
       console.log("Login successful, navigating to home");
       window.location.href = "/home";
     } catch (err: any) {
