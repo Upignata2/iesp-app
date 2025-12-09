@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 const STORAGE_KEY_SESSION = 'iesp_session_user';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://iesp-app.vercel.app';
 
 async function api(path: string, payload?: any) {
   const url = API_BASE ? `${API_BASE}${path}` : path;
