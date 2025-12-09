@@ -23,7 +23,9 @@ import { registerUserWithEmail } from '../../db.js';
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const ok = setCors(req, res);
-    if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+    // If setCors returned true and method is OPTIONS, it handled the response
+    if (req.method === 'OPTIONS') return; 
+    
     if (!ok) { res.status(403).end(); return; }
 
     if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }

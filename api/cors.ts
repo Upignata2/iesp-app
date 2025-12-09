@@ -50,8 +50,18 @@ export function setCors(req: VercelRequest, res: VercelResponse) {
     }
   }
 
+  // Allow * for development if needed (use with caution)
+  // res.setHeader('Access-Control-Allow-Origin', '*');
+
   res.setHeader('Access-Control-Allow-Credentials', 'true');
-  res.setHeader('Access-Control-Allow-Headers', 'content-type, authorization, cookie');
+  res.setHeader('Access-Control-Allow-Headers', 'content-type, authorization, cookie, x-requested-with');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,PUT,DELETE');
+  
+  // Handle preflight directly in CORS helper if method is OPTIONS
+  if (req.method === 'OPTIONS') {
+    res.status(204).end();
+    return true; // Return true to indicate handled
+  }
+  
   return ok;
 }
