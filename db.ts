@@ -109,6 +109,7 @@ function hashWithSalt(password: string, salt: string) {
 }
 
 export async function registerUserWithEmail(name: string, email: string, password: string) {
+  email = email.toLowerCase().trim();
   console.log(`[Database] registerUserWithEmail: Attempting to register user: ${email}`);
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -136,7 +137,7 @@ export async function registerUserWithEmail(name: string, email: string, passwor
 export async function loginWithEmail(email: string, password: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  const u = await getUserByEmail(email);
+  const u = await getUserByEmail(email.toLowerCase().trim());
   if (!u || !u.passwordSalt || !u.passwordHash) throw new Error("Invalid credentials");
   const computed = hashWithSalt(password, u.passwordSalt);
   if (computed !== u.passwordHash) throw new Error("Invalid credentials");
