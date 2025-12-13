@@ -36,6 +36,7 @@ function Router() {
         {() => (
           <MobileLayout>
             <Switch>
+              <Route path={"/"} component={Home} />
               <Route path={"/home"} component={Home} />
               <Route path={"/profile"} component={Profile} />
               <Route path={"/articles"} component={Articles} />
