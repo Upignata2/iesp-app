@@ -1,8 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import { Loader2, BookOpen, Newspaper, Calendar, Music, Heart, Users, MessageSquare, Gift, Video, Star, Menu, Globe, Instagram } from "lucide-react";
-import { APP_LOGO, APP_TITLE, APP_LOGO_FALLBACK } from "@/const";
 import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
@@ -71,8 +69,7 @@ export default function Home() {
             </Button>
           )}
           <div className="mx-1 mb-6 text-center text-white">
-            <img src={APP_LOGO} alt={APP_TITLE} className="w-20 h-20 mx-auto rounded-xl mb-2 shadow-lg" onError={(e) => { e.currentTarget.src = APP_LOGO_FALLBACK; }} />
-            <div className="text-sm opacity-80">IESP</div>
+            <div className="text-5xl font-bold tracking-wide">IESP</div>
           </div>
           {!isAuthenticated ? (
             <div className="text-center mb-6">

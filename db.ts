@@ -178,6 +178,19 @@ export async function createArticle(data: InsertArticle) {
   return result;
 }
 
+export async function updateArticle(id: number, data: Partial<InsertArticle>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = { ...data, updatedAt: new Date() };
+  return db.update(articles).set(updateData).where(eq(articles.id, id));
+}
+
+export async function deleteArticle(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(articles).where(eq(articles.id, id));
+}
+
 // News
 export async function getNews(limit: number = 20, offset: number = 0) {
   const db = await getDb();
@@ -198,6 +211,19 @@ export async function createNews(data: InsertNews) {
   return db.insert(news).values(data);
 }
 
+export async function updateNews(id: number, data: Partial<InsertNews>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = { ...data, updatedAt: new Date() };
+  return db.update(news).set(updateData).where(eq(news.id, id));
+}
+
+export async function deleteNews(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(news).where(eq(news.id, id));
+}
+
 // Events
 export async function getEvents(limit: number = 20, offset: number = 0) {
   const db = await getDb();
@@ -216,6 +242,19 @@ export async function createEvent(data: InsertEvent) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.insert(events).values(data);
+}
+
+export async function updateEvent(id: number, data: Partial<InsertEvent>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = { ...data, updatedAt: new Date() };
+  return db.update(events).set(updateData).where(eq(events.id, id));
+}
+
+export async function deleteEvent(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(events).where(eq(events.id, id));
 }
 
 // Hymns
@@ -259,6 +298,19 @@ export async function createDailyWord(data: InsertDailyWord) {
   return db.insert(dailyWords).values(data);
 }
 
+export async function updateDailyWord(id: number, data: Partial<InsertDailyWord>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = { ...data, updatedAt: new Date() };
+  return db.update(dailyWords).set(updateData).where(eq(dailyWords.id, id));
+}
+
+export async function deleteDailyWord(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(dailyWords).where(eq(dailyWords.id, id));
+}
+
 // Prayer Reasons
 export async function getPrayerReasons(limit: number = 50, offset: number = 0) {
   const db = await getDb();
@@ -270,6 +322,19 @@ export async function createPrayerReason(data: InsertPrayerReason) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.insert(prayerReasons).values(data);
+}
+
+export async function updatePrayerReason(id: number, data: Partial<InsertPrayerReason>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = { ...data, updatedAt: new Date() };
+  return db.update(prayerReasons).set(updateData).where(eq(prayerReasons.id, id));
+}
+
+export async function deletePrayerReason(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(prayerReasons).where(eq(prayerReasons.id, id));
 }
 
 // Service Schedules
@@ -302,6 +367,19 @@ export async function createGalleryItem(data: InsertGalleryItem) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   return db.insert(galleryItems).values(data);
+}
+
+export async function updateGalleryItem(id: number, data: Partial<InsertGalleryItem>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const updateData: any = { ...data, updatedAt: new Date() };
+  return db.update(galleryItems).set(updateData).where(eq(galleryItems.id, id));
+}
+
+export async function deleteGalleryItem(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  return db.delete(galleryItems).where(eq(galleryItems.id, id));
 }
 
 // Contact Submissions
