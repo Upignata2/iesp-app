@@ -5,15 +5,15 @@ import { cn } from "@/lib/utils";
 export default function MobileLayout({ children }) {
     const [location, navigate] = useLocation();
     const navItems = [
-        { label: "Home", icon: Home, path: "/" },
+        { label: "Home", icon: Home, path: "/home" },
         { label: "Vídeos", icon: Video, path: "/videos" },
         { label: "Favoritos", icon: Star, path: "/favorites" },
         { label: "Menu", icon: Menu, path: "/menu" },
     ];
     const isActive = (path) => {
-        if (path === "/" && location === "/")
+        if (path === "/home" && location === "/home")
             return true;
-        if (path !== "/" && location.startsWith(path))
+        if (path !== "/home" && location.startsWith(path))
             return true;
         return false;
     };
