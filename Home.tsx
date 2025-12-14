@@ -74,8 +74,8 @@ export default function Home() {
                 variant="outline"
                 size="sm"
                 className="text-white border-white"
-                onClick={() => {
-                  logout();
+                onClick={async () => {
+                  await logout();
                   navigate("/login", { replace: true } as any);
                 }}
               >
