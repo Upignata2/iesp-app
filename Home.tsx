@@ -76,7 +76,12 @@ export default function Home() {
                 className="text-white border-white"
                 onClick={() => {
                   logout();
-                  navigate("/login");
+                  navigate("/login", { replace: true } as any);
+                  setTimeout(() => {
+                    if (window.location.pathname !== "/login") {
+                      window.location.replace("/login");
+                    }
+                  }, 50);
                 }}
               >
                 Sair
