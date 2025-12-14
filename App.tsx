@@ -5,9 +5,8 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
-import SplashScreen from "./pages/SplashScreen";
 import MobileLayout from "./MobileLayout";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 import Articles from "./pages/Articles";
@@ -70,16 +69,6 @@ function Router() {
 }
 
 function App() {
-  const [showSplash, setShowSplash] = useState(true);
-
-  useEffect(() => {
-    // Hide splash after 3 seconds
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <ErrorBoundary>
       <ThemeProvider
@@ -88,7 +77,6 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
-          {showSplash && <SplashScreen />}
           <Switch>
             <Route path={"/"} component={RootEntry} />
             <Route>

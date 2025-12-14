@@ -15,7 +15,7 @@ export default function Home() {
   // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      // Optionally redirect to login, or show splash screen
+      navigate("/login");
     }
   }, [loading, isAuthenticated]);
 
@@ -63,9 +63,6 @@ export default function Home() {
                 <Button size="lg" className="bg-white text-blue-700" onClick={() => navigate('/login')}>Login</Button>
                 <Button size="lg" variant="secondary" className="bg-white/90 text-blue-700" onClick={() => navigate('/register')}>Registrar</Button>
               </div>
-              <div className="mt-3">
-                <Button variant="ghost" onClick={() => navigate('/')}>Continuar sem login</Button>
-              </div>
             </div>
           ) : (
             <div className="flex items-center justify-between mb-4">
@@ -73,7 +70,17 @@ export default function Home() {
                 <img src={APP_LOGO} alt={APP_TITLE} className="w-10 h-10 rounded-lg" />
                 <div className="text-white/90 text-sm">{user?.name}</div>
               </div>
-              <Button variant="outline" size="sm" className="text-white border-white" onClick={logout}>Sair</Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-white border-white"
+                onClick={() => {
+                  logout();
+                  navigate("/login");
+                }}
+              >
+                Sair
+              </Button>
             </div>
           )}
 

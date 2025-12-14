@@ -63,7 +63,7 @@ export default function Menu() {
           <Button 
             variant="destructive" 
             className="w-full"
-            onClick={logout}
+            onClick={() => { logout(); navigate("/login"); }}
           >
             <LogOut className="w-4 h-4 mr-2" />
             Sair

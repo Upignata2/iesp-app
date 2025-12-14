@@ -39,7 +39,12 @@ export default function Login() {
       await Promise.race([login(email, password), timeoutPromise]);
       
       console.log("Login successful, navigating to home");
-      navigate("/home");
+      navigate("/home", { replace: true } as any);
+      setTimeout(() => {
+        if (window.location.pathname !== "/home") {
+          window.location.replace("/home");
+        }
+      }, 50);
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");
@@ -121,9 +126,6 @@ export default function Login() {
           </button>
         </p>
 
-        <div className="mt-6">
-          <Button variant="ghost" className="w-full text-white" onClick={() => navigate('/home')}>Continuar sem login</Button>
-        </div>
       </Card>
     </div>
   );
