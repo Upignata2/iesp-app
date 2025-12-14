@@ -41,7 +41,16 @@ async function api(path: string, payload?: any) {
 
 export function useAuth() {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<{ id?: number; name?: string; email?: string; role?: string; createdAt?: string } | null>(null);
+  const initialUser = (() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY_SESSION);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  })();
+  const [user, setUser] = useState<{ id?: number; name?: string; email?: string; role?: string; createdAt?: string } | null>(initialUser);
+  const [initialized, setInitialized] = useState(false);
   const isAuthenticated = !!user;
 
   useEffect(() => {
@@ -65,6 +74,7 @@ export function useAuth() {
         } catch {}
       }
     })();
+    setInitialized(true);
   }, []);
 
   async function login(email: string, password: string) {
@@ -99,5 +109,5 @@ export function useAuth() {
     setUser(null);
   }
 
-  return { user, loading, isAuthenticated, login, register, logout } as const;
+  return { user, loading, isAuthenticated, initialized, login, register, logout } as const;
 }

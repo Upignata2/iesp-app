@@ -89,13 +89,14 @@ function App() {
 export default App;
 
 function AuthGuard({ children }: { children: ReactNode }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, initialized } = useAuth();
   const [, navigate] = useLocation();
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (initialized && !isAuthenticated) {
       navigate("/login", { replace: true } as any);
     }
-  }, [isAuthenticated, navigate]);
+  }, [initialized, isAuthenticated, navigate]);
+  if (!initialized) return null;
   if (!isAuthenticated) return null;
   return <>{children}</>;
 }
