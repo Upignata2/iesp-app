@@ -12,10 +12,9 @@ export default function Home() {
   const [, navigate] = useLocation();
   const [showMenu, setShowMenu] = useState(false);
 
-  // Redirect to login if not authenticated
   useEffect(() => {
     if (!loading && !isAuthenticated) {
-      // Optionally redirect to login, or show splash screen
+      navigate('/login');
     }
   }, [loading, isAuthenticated]);
 
