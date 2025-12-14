@@ -17,7 +17,7 @@ export default function Login() {
 
   useEffect(() => {
     if (initialized && isAuthenticated) {
-      navigate("/home", { replace: true } as any);
+      window.location.href = "/home";
     }
   }, [initialized, isAuthenticated, navigate]);
 
@@ -39,10 +39,7 @@ export default function Login() {
       await Promise.race([login(email, password), timeoutPromise]);
       
       console.log("Login successful, navigating to home");
-      navigate("/home", { replace: true } as any);
-      if (window.location.pathname !== "/home") {
-        window.location.assign("/home");
-      }
+      window.location.href = "/home";
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");

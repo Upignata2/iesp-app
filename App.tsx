@@ -1,13 +1,12 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import MobileLayout from "./MobileLayout";
-import { useEffect, ReactNode } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
+import { useEffect } from "react";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -34,7 +33,6 @@ function Router() {
       <Route path={"/forgot-password"} component={ForgotPassword} />
       <Route>
         {() => (
-          <AuthGuard>
             <MobileLayout>
               <Switch>
                 <Route path={"/home"} component={Home} />
@@ -58,7 +56,6 @@ function Router() {
 
               </Switch>
             </MobileLayout>
-          </AuthGuard>
         )}
       </Route>
     </Switch>
@@ -87,16 +84,3 @@ function App() {
 }
 
 export default App;
-
-function AuthGuard({ children }: { children: ReactNode }) {
-  const { isAuthenticated, initialized } = useAuth();
-  const [, navigate] = useLocation();
-  useEffect(() => {
-    if (initialized && !isAuthenticated) {
-      navigate("/login", { replace: true } as any);
-    }
-  }, [initialized, isAuthenticated, navigate]);
-  if (!initialized) return null;
-  if (!isAuthenticated) return null;
-  return <>{children}</>;
-}
