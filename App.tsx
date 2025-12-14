@@ -95,11 +95,6 @@ function RootEntry() {
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/home", { replace: true } as any);
-      setTimeout(() => {
-        if (window.location.pathname !== "/home") {
-          window.location.replace("/home");
-        }
-      }, 50);
     }
   }, [isAuthenticated, navigate]);
   return <Login />;

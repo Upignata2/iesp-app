@@ -66,11 +66,6 @@ export default function Menu() {
             onClick={() => {
               logout();
               navigate("/login", { replace: true } as any);
-              setTimeout(() => {
-                if (window.location.pathname !== "/login") {
-                  window.location.replace("/login");
-                }
-              }, 50);
             }}
           >
             <LogOut className="w-4 h-4 mr-2" />

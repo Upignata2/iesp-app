@@ -40,11 +40,6 @@ export default function Login() {
       
       console.log("Login successful, navigating to home");
       navigate("/home", { replace: true } as any);
-      setTimeout(() => {
-        if (window.location.pathname !== "/home") {
-          window.location.replace("/home");
-        }
-      }, 50);
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");
@@ -59,7 +54,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-blue-700 text-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md p-8 bg-neutral-900 border-neutral-800 text-white">
         <div className="text-center mb-8">
           <img src={APP_LOGO} alt={APP_TITLE} className="w-20 h-20 mx-auto rounded-lg mb-4" />
