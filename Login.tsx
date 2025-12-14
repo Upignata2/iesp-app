@@ -9,11 +9,17 @@ import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Login() {
   const [, navigate] = useLocation();
-  const { login } = useAuth();
+  const { login, isAuthenticated, initialized } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (initialized && isAuthenticated) {
+      navigate("/home", { replace: true } as any);
+    }
+  }, [initialized, isAuthenticated, navigate]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,6 +40,9 @@ export default function Login() {
       
       console.log("Login successful, navigating to home");
       navigate("/home", { replace: true } as any);
+      if (window.location.pathname !== "/home") {
+        window.location.assign("/home");
+      }
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");
