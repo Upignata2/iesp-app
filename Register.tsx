@@ -57,7 +57,7 @@ export default function Register() {
 
       setSuccess(true);
       setTimeout(() => {
-        window.location.href = "/login";
+        navigate("/login");
       }, 1500);
     } catch (err: any) {
       const code = String(err?.message || "");
