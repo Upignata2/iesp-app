@@ -71,7 +71,7 @@ const server = http.createServer(async (req, res) => {
       const raw = await readBody(req);
       const body = raw ? JSON.parse(raw) : {};
       const name = String(body?.name || '').trim();
-      const email = String(body?.email || '').trim().toLowerCase();
+      const email = String(body?.email || '').trim();
       const password = String(body?.password || '');
       if (!name || !email || !password) {
         res.statusCode = 400;
@@ -117,7 +117,7 @@ const server = http.createServer(async (req, res) => {
       const raw = await readBody(req);
       const body = raw ? JSON.parse(raw) : {};
       const { loginWithEmail } = await dbPromise;
-      const user = await loginWithEmail(String(body.email || '').toLowerCase().trim(), body.password);
+      const user = await loginWithEmail(body.email, body.password);
       const origin = (req.headers['origin'] as string) || '';
       const secure = origin.startsWith('https://');
       const sameSite = secure ? 'SameSite=None' : 'SameSite=Lax';

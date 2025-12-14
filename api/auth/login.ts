@@ -28,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
     try {
       const body = await readBody(req);
-      const email = String(body?.email || '').trim().toLowerCase();
+      const email = String(body?.email || '').trim();
       const password = String(body?.password || '');
       
       const user = await loginWithEmail(email, password);

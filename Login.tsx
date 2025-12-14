@@ -19,7 +19,7 @@ export default function Login() {
     if (isAuthenticated) {
       navigate("/home");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +39,7 @@ export default function Login() {
       await Promise.race([login(email, password), timeoutPromise]);
       
       console.log("Login successful, navigating to home");
-      window.location.href = "/home";
+      navigate("/home");
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");

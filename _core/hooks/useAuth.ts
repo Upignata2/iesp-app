@@ -70,7 +70,7 @@ export function useAuth() {
   async function login(email: string, password: string) {
     setLoading(true);
     try {
-      const data = await api('/api/auth/login', { email: String(email || '').trim().toLowerCase(), password });
+      const data = await api('/api/auth/login', { email, password });
       if (!data?.user) throw new Error('Credenciais inválidas');
       localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(data.user));
       setUser(data.user);
@@ -83,7 +83,7 @@ export function useAuth() {
   async function register(name: string, email: string, password: string) {
     setLoading(true);
     try {
-      const data = await api('/api/auth/register', { name: String(name || '').trim(), email: String(email || '').trim().toLowerCase(), password });
+      const data = await api('/api/auth/register', { name, email, password });
       if (!data?.success) throw new Error(data?.error || 'Erro ao registrar');
       return true;
     } finally {

@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       const body = await readBody(req);
       const name = String(body?.name || '').trim();
-      const email = String(body?.email || '').trim().toLowerCase();
+      const email = String(body?.email || '').trim();
       const password = String(body?.password || '');
       if (!name || !email || !password) {
         res.status(400).json({ success: false, error: 'missing_fields' });

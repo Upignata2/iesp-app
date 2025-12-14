@@ -8,8 +8,6 @@ import Home from "./pages/Home";
 import SplashScreen from "./pages/SplashScreen";
 import MobileLayout from "./MobileLayout";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/_core/hooks/useAuth";
-import { useLocation } from "wouter";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -71,8 +69,6 @@ function Router() {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
-  const [location, navigate] = useLocation();
-  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Hide splash after 3 seconds
@@ -81,12 +77,6 @@ function App() {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
-
-  useEffect(() => {
-    if (location === "/") {
-      navigate("/login");
-    }
-  }, [location]);
 
   return (
     <ErrorBoundary>
@@ -98,6 +88,7 @@ function App() {
           <Toaster />
           {showSplash && <SplashScreen />}
           <Switch>
+            <Route path={"/"} component={Login} />
             <Route>
               {() => <Router />}
             </Route>
