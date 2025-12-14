@@ -89,7 +89,6 @@ function App() {
           <Toaster />
           {showSplash && <SplashScreen />}
           <Switch>
-            <Route path={"/"} component={Login} />
             <Route>
               {() => <Router />}
             </Route>
