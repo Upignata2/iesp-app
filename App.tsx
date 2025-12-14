@@ -29,6 +29,7 @@ import Profile from "./pages/Profile";
 function Router() {
   return (
     <Switch>
+      <Route path={"/"} component={Login} />
       <Route path={"/login"} component={Login} />
       <Route path={"/register"} component={Register} />
       <Route path={"/forgot-password"} component={ForgotPassword} />
