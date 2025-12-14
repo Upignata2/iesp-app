@@ -1,1 +1,11 @@
-export { default } from "./Menu.tsx";
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { Card } from "@/components/ui/card";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { ExternalLink, LogOut, User } from "lucide-react";
+import { useLocation } from "wouter";
+export default function Menu() {
+    const { user, logout, isAuthenticated } = useAuth();
+    const [, navigate] = useLocation();
+    return (_jsxs("div", { className: "max-w-4xl mx-auto px-4 py-6", children: [_jsx("h1", { className: "text-3xl font-bold mb-6", children: "Menu" }), isAuthenticated && (_jsxs(Card, { className: "p-6 mb-6 bg-gradient-to-r from-primary to-blue-700 text-white", children: [_jsx("h2", { className: "text-xl font-bold mb-2", children: "Bem-vindo!" }), _jsx("p", { className: "mb-4", children: user?.name || "Usuário" }), _jsx("p", { className: "text-sm text-blue-100", children: user?.email })] })), _jsxs("div", { className: "space-y-4", children: [isAuthenticated && (_jsxs(Card, { className: "p-4", children: [_jsx("h3", { className: "font-bold mb-2", children: "Minha Conta" }), _jsx("div", { className: "space-y-2", children: _jsxs(Button, { variant: "outline", className: "w-full justify-start", onClick: () => navigate("/profile"), children: [_jsx(User, { className: "w-4 h-4 mr-2" }), "Meu Perfil"] }) })] })), _jsxs(Card, { className: "p-4", children: [_jsx("h3", { className: "font-bold mb-2", children: "Links R\u00E1pidos" }), _jsxs("div", { className: "space-y-2", children: [_jsxs(Button, { variant: "outline", className: "w-full justify-start", onClick: () => window.open("https://www.instagram.com", "_blank"), children: [_jsx(ExternalLink, { className: "w-4 h-4 mr-2" }), "Instagram"] }), _jsxs(Button, { variant: "outline", className: "w-full justify-start", onClick: () => window.open("https://www.example.com", "_blank"), children: [_jsx(ExternalLink, { className: "w-4 h-4 mr-2" }), "Site Oficial"] })] })] }), isAuthenticated && (_jsxs(Button, { variant: "destructive", className: "w-full", onClick: logout, children: [_jsx(LogOut, { className: "w-4 h-4 mr-2" }), "Sair"] })), !isAuthenticated && (_jsx(Button, { className: "w-full bg-primary hover:bg-blue-700 text-white", onClick: () => navigate('/login'), children: "Entrar" }))] })] }));
+}
