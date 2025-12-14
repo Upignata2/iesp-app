@@ -55,8 +55,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-blue-900 to-blue-700">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className="mx-1 mb-6 rounded-3xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white shadow-xl">
+            <div className="px-6 py-10 text-center">
+              <img src={APP_LOGO} alt={APP_TITLE} className="w-16 h-16 mx-auto rounded-2xl mb-4 shadow-lg" />
+              <div className="text-sm opacity-80">Igreja Smart</div>
+              <div className="text-3xl font-semibold mt-1">Crie agora mesmo</div>
+              <div className="text-3xl font-bold">o app da sua igreja!</div>
+            </div>
+          </div>
           {!isAuthenticated ? (
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-3">
@@ -73,7 +81,7 @@ export default function Home() {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-white border-white"
+                className="bg-white/10 hover:bg-white/20 text-white ring-1 ring-white/20"
                 onClick={async () => {
                   await logout();
                   navigate("/login", { replace: true } as any);
@@ -88,11 +96,11 @@ export default function Home() {
             {menuItems.map((item) => {
               const Icon = item.icon;
               return (
-                <button key={item.id} onClick={() => handleClick(item.route)} className="flex flex-col items-center gap-2">
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center bg-white text-blue-700 shadow-md`}> 
-                    <Icon className="w-6 h-6" />
+                <button key={item.id} onClick={() => handleClick(item.route)} className="group flex flex-col items-center gap-3 transition-transform hover:scale-105">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/10 backdrop-blur-md ring-1 ring-white/20 text-white shadow-lg">
+                    <Icon className="w-7 h-7" />
                   </div>
-                  <span className="text-xs text-white">{item.label}</span>
+                  <span className="text-xs text-white/80">{item.label}</span>
                 </button>
               );
             })}
