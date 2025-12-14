@@ -13,8 +13,8 @@ export default function Home() {
   const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
-      navigate('/login');
+    if (!loading) {
+      return;
     }
   }, [loading, isAuthenticated]);
 
