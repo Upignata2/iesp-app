@@ -2,7 +2,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
-import { useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -10,6 +9,7 @@ import SplashScreen from "./pages/SplashScreen";
 import MobileLayout from "./MobileLayout";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useLocation } from "wouter";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -28,22 +28,12 @@ import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
 
-function RootRedirect() {
-  const { isAuthenticated } = useAuth();
-  const [, navigate] = useLocation();
-  useEffect(() => {
-    navigate(isAuthenticated ? "/home" : "/login");
-  }, [isAuthenticated]);
-  return null;
-}
-
 function Router() {
   return (
     <Switch>
       <Route path={"/login"} component={Login} />
       <Route path={"/register"} component={Register} />
       <Route path={"/forgot-password"} component={ForgotPassword} />
-      <Route path={"/"} component={RootRedirect} />
       <Route>
         {() => (
           <MobileLayout>
@@ -81,6 +71,8 @@ function Router() {
 
 function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [location, navigate] = useLocation();
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Hide splash after 3 seconds
@@ -89,6 +81,12 @@ function App() {
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (location === "/") {
+      navigate("/login");
+    }
+  }, [location]);
 
   return (
     <ErrorBoundary>
