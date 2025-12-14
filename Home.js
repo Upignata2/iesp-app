@@ -6,15 +6,16 @@ import { APP_LOGO, APP_TITLE } from "@/const";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 export default function Home() {
-    const { user, loading, isAuthenticated, logout } = useAuth();
+    const { user, loading, isAuthenticated, logout: rawLogout } = useAuth();
     const [, navigate] = useLocation();
     const [showMenu, setShowMenu] = useState(false);
+    const logout = async () => { await rawLogout(); navigate("/login", { replace: true }); };
     // Redirect to login if not authenticated
     useEffect(() => {
         if (!loading && !isAuthenticated) {
-            // Optionally redirect to login, or show splash screen
+            navigate("/login");
         }
-    }, [loading, isAuthenticated]);
+    }, [loading, isAuthenticated, navigate]);
     const menuItems = [
         { id: 1, label: "Artigos", icon: BookOpen, color: "bg-blue-500", route: "/articles" },
         { id: 2, label: "Notícias", icon: Newspaper, color: "bg-blue-600", route: "/news" },

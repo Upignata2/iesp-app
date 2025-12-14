@@ -108,6 +108,9 @@ export function useAuth() {
     } catch {}
     localStorage.removeItem(STORAGE_KEY_SESSION);
     setUser(null);
+    try {
+      window.location.href = '/login';
+    } catch {}
   }
 
   return { user, loading, isAuthenticated, initialized, login, register, logout } as const;
