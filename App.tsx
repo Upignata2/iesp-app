@@ -7,8 +7,6 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import MobileLayout from "./MobileLayout";
 import { useEffect } from "react";
-import { useLocation } from "wouter";
-import { useAuth } from "@/_core/hooks/useAuth";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -78,7 +76,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Switch>
-            <Route path={"/"} component={RootEntry} />
+            <Route path={"/"} component={Login} />
             <Route>
               {() => <Router />}
             </Route>
@@ -87,17 +85,6 @@ function App() {
       </ThemeProvider>
     </ErrorBoundary>
   );
-}
-
-function RootEntry() {
-  const { isAuthenticated } = useAuth();
-  const [, navigate] = useLocation();
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/home", { replace: true } as any);
-    }
-  }, [isAuthenticated, navigate]);
-  return <Login />;
 }
 
 export default App;
