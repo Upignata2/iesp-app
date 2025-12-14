@@ -56,7 +56,13 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
       <div className="absolute top-6 left-0 right-0 text-center">
-        <h1 className="text-xl font-bold tracking-wide">Igreja Evangélica Sinais e Prodígios</h1>
+        <img 
+          src={APP_LOGO} 
+          alt={APP_TITLE}
+          className="w-20 h-20 mx-auto rounded-xl mb-2 shadow-lg"
+          onError={(e) => { e.currentTarget.src = "/iesp-logo.svg"; }}
+        />
+        <div className="text-sm opacity-80">IESP</div>
       </div>
       <Card className="w-full max-w-md p-8 bg-neutral-950 border border-neutral-800 text-white rounded-2xl shadow-xl">
         <h2 className="text-center text-sm font-semibold text-neutral-300 mb-6">LOGIN</h2>

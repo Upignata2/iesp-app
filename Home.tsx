@@ -57,24 +57,22 @@ export default function Home() {
   return (
     <div className="min-h-screen pb-24 bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900">
       <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="relative mx-1 mb-6 rounded-3xl bg-gradient-to-br from-indigo-600 to-blue-500 text-white shadow-xl">
-            <div className="px-6 py-10 text-center">
-              <img src={APP_LOGO} alt={APP_TITLE} className="w-16 h-16 mx-auto rounded-2xl mb-2 shadow-lg" />
-              <div className="text-sm opacity-80">IESP</div>
-            </div>
-            {isAuthenticated && (
-              <Button
-                className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white ring-1 ring-white/20"
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  await logout();
-                  navigate("/login", { replace: true } as any);
-                }}
-              >
-                Sair
-              </Button>
-            )}
+          {isAuthenticated && (
+            <Button
+              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white ring-1 ring-white/20"
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                await logout();
+                navigate("/login", { replace: true } as any);
+              }}
+            >
+              Sair
+            </Button>
+          )}
+          <div className="mx-1 mb-6 text-center text-white">
+            <img src={APP_LOGO} alt={APP_TITLE} className="w-20 h-20 mx-auto rounded-xl mb-2 shadow-lg" />
+            <div className="text-sm opacity-80">IESP</div>
           </div>
           {!isAuthenticated ? (
             <div className="text-center mb-6">
