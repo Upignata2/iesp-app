@@ -52,7 +52,8 @@ export default function Login() {
       <div className="absolute top-6 left-0 right-0 text-center">
         <h1 className="text-xl font-bold tracking-wide">Igreja Evangélica Sinais e Prodígios</h1>
       </div>
-      <Card className="w-full max-w-md p-8 bg-neutral-900 border-neutral-800 text-white">
+      <Card className="w-full max-w-md p-8 bg-neutral-950 border border-neutral-800 text-white rounded-2xl shadow-xl">
+        <h2 className="text-center text-sm font-semibold text-neutral-300 mb-6">LOGIN</h2>
 
         <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
           <div>
@@ -63,7 +64,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
-              className="bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-400"
+              className="bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-500 rounded-xl"
             />
           </div>
           <div>
@@ -74,8 +75,17 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-400"
+              className="bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-500 rounded-xl"
             />
+            <div className="mt-2 text-right">
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="text-xs text-neutral-300 hover:text-white underline"
+              >
+                Esqueceu minha senha.
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -87,29 +97,20 @@ export default function Login() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gray-300 text-black hover:bg-gray-200"
+            className="w-full bg-white text-black hover:bg-white/90 rounded-xl"
           >
             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Entrar
+            Acessar
           </Button>
         </form>
 
-        <p className="text-center text-sm text-neutral-300">
+        <p className="text-center text-sm text-neutral-400">
           Não tem conta?{" "}
           <button
             onClick={() => navigate("/register")}
             className="text-white hover:underline font-medium"
           >
             Registre-se
-          </button>
-        </p>
-
-        <p className="text-center text-sm text-neutral-300 mt-4">
-          <button
-            onClick={() => navigate("/forgot-password")}
-            className="text-white hover:underline"
-          >
-            Esqueceu sua senha?
           </button>
         </p>
 
