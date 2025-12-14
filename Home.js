@@ -2,7 +2,7 @@ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Loader2, BookOpen, Newspaper, Calendar, Music, Heart, Users, MessageSquare, Gift, Video, Globe, Instagram } from "lucide-react";
-import { APP_LOGO, APP_TITLE } from "@/const";
+import { APP_LOGO, APP_TITLE, APP_LOGO_FALLBACK } from "@/const";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 export default function Home() {
