@@ -1,12 +1,13 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import MobileLayout from "./MobileLayout";
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -33,33 +34,31 @@ function Router() {
       <Route path={"/forgot-password"} component={ForgotPassword} />
       <Route>
         {() => (
-          <MobileLayout>
-            <Switch>
-              <Route path={"/home"} component={Home} />
-              <Route path={"/profile"} component={Profile} />
-              <Route path={"/articles"} component={Articles} />
-              <Route path={"/news"} component={News} />
-              <Route path={"/events"} component={Events} />
-              <Route path={"/hymns"} component={Hymns} />
-              <Route path={"/daily-word"} component={DailyWord} />
-              <Route path={"/prayer-reasons"} component={PrayerReasons} />
-              <Route path={"/service-schedules"} component={ServiceSchedules} />
-              <Route path={"/contact"} component={Contact} />
-              <Route path={"/campaigns"} component={Campaigns} />
-              <Route path={"/gallery"} component={Gallery} />
-              <Route path={"/videos"} component={Videos} />
-              <Route path={"/favorites"} component={Favorites} />
-              <Route path={"/menu"} component={Menu} />
-              <Route path={"/404"} component={NotFound} />
-              {/* Final fallback route */}
-              <Route component={NotFound} />
-      
-    
-    
-    
-    
-            </Switch>
-          </MobileLayout>
+          <AuthGuard>
+            <MobileLayout>
+              <Switch>
+                <Route path={"/home"} component={Home} />
+                <Route path={"/profile"} component={Profile} />
+                <Route path={"/articles"} component={Articles} />
+                <Route path={"/news"} component={News} />
+                <Route path={"/events"} component={Events} />
+                <Route path={"/hymns"} component={Hymns} />
+                <Route path={"/daily-word"} component={DailyWord} />
+                <Route path={"/prayer-reasons"} component={PrayerReasons} />
+                <Route path={"/service-schedules"} component={ServiceSchedules} />
+                <Route path={"/contact"} component={Contact} />
+                <Route path={"/campaigns"} component={Campaigns} />
+                <Route path={"/gallery"} component={Gallery} />
+                <Route path={"/videos"} component={Videos} />
+                <Route path={"/favorites"} component={Favorites} />
+                <Route path={"/menu"} component={Menu} />
+                <Route path={"/404"} component={NotFound} />
+                {/* Final fallback route */}
+                <Route component={NotFound} />
+
+              </Switch>
+            </MobileLayout>
+          </AuthGuard>
         )}
       </Route>
     </Switch>
@@ -88,3 +87,15 @@ function App() {
 }
 
 export default App;
+
+function AuthGuard({ children }: { children: ReactNode }) {
+  const { isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/login", { replace: true } as any);
+    }
+  }, [isAuthenticated, navigate]);
+  if (!isAuthenticated) return null;
+  return <>{children}</>;
+}

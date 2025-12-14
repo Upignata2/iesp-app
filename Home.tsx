@@ -55,7 +55,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-blue-700">
+    <div className="min-h-screen pb-24 bg-gradient-to-b from-blue-900 to-blue-700">
       <div className="max-w-6xl mx-auto px-4 py-6">
           {!isAuthenticated ? (
             <div className="text-center mb-6">
@@ -89,10 +89,10 @@ export default function Home() {
               const Icon = item.icon;
               return (
                 <button key={item.id} onClick={() => handleClick(item.route)} className="flex flex-col items-center gap-2">
-                  <div className={`w-14 h-14 rounded-full flex items-center justify-center border border-white text-white bg-blue-600/70`}> 
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center bg-white text-blue-700 shadow-md`}> 
                     <Icon className="w-6 h-6" />
                   </div>
-                  <span className="text-xs text-black">{item.label}</span>
+                  <span className="text-xs text-white">{item.label}</span>
                 </button>
               );
             })}
