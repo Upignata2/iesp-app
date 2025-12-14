@@ -63,6 +63,7 @@ export function useAuth() {
           if (data?.user) {
             setUser(data.user);
             localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(data.user));
+            setInitialized(true);
             return;
           }
         }
@@ -73,8 +74,8 @@ export function useAuth() {
           setUser(JSON.parse(raw));
         } catch {}
       }
+      setInitialized(true);
     })();
-    setInitialized(true);
   }, []);
 
   async function login(email: string, password: string) {
