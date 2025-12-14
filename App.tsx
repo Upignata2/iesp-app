@@ -1,12 +1,13 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import MobileLayout from "./MobileLayout";
 import { useEffect } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -72,7 +73,7 @@ function App() {
         <TooltipProvider>
           <Toaster />
           <Switch>
-            <Route path={"/"} component={Login} />
+            <Route path={"/"} component={RootEntry} />
             <Route>
               {() => <Router />}
             </Route>
@@ -84,3 +85,14 @@ function App() {
 }
 
 export default App;
+
+function RootEntry() {
+  const { isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home", { replace: true } as any);
+    }
+  }, [isAuthenticated, navigate]);
+  return <Login />;
+}
