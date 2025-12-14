@@ -39,7 +39,7 @@ export default function Login() {
       await Promise.race([login(email, password), timeoutPromise]);
       
       console.log("Login successful, navigating to home");
-      navigate("/home");
+      window.location.href = "/home";
     } catch (err: any) {
       console.error("Login failed:", err);
       const code = String(err?.message || "");
