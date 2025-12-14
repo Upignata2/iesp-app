@@ -34,7 +34,7 @@ export default function Home() {
     { id: 12, label: "Instagram", icon: Instagram, color: "bg-slate-700", route: "external:https://instagram.com/" },
   ];
 
-  if (loading) {
+  if (!initialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
         <div className="text-center">
