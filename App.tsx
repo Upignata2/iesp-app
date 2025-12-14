@@ -8,6 +8,8 @@ import Home from "./pages/Home";
 import SplashScreen from "./pages/SplashScreen";
 import MobileLayout from "./MobileLayout";
 import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 import Articles from "./pages/Articles";
 import News from "./pages/News";
 import Events from "./pages/Events";
@@ -88,7 +90,7 @@ function App() {
           <Toaster />
           {showSplash && <SplashScreen />}
           <Switch>
-            <Route path={"/"} component={Login} />
+            <Route path={"/"} component={RootEntry} />
             <Route>
               {() => <Router />}
             </Route>
@@ -97,6 +99,15 @@ function App() {
       </ThemeProvider>
     </ErrorBoundary>
   );
+}
+
+function RootEntry() {
+  const { isAuthenticated } = useAuth();
+  const [, navigate] = useLocation();
+  useEffect(() => {
+    if (isAuthenticated) navigate("/home");
+  }, [isAuthenticated, navigate]);
+  return <Login />;
 }
 
 export default App;
