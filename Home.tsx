@@ -8,16 +8,16 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 
 export default function Home() {
-  const { user, loading, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, initialized, logout } = useAuth();
   const [, navigate] = useLocation();
   const [showMenu, setShowMenu] = useState(false);
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (!loading && !isAuthenticated) {
+    if (initialized && !isAuthenticated) {
       navigate("/login");
     }
-  }, [loading, isAuthenticated]);
+  }, [initialized, isAuthenticated, navigate]);
 
   const menuItems = [
     { id: 1, label: "Artigos", icon: BookOpen, color: "bg-blue-500", route: "/articles" },
