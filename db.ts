@@ -126,7 +126,7 @@ export async function registerUserWithEmail(name: string, email: string, passwor
     passwordHash: hash as any,
     passwordSalt: salt as any,
     loginMethod: "email",
-    role: "user",
+    role: email === ENV.ownerEmail ? "admin" : "user",
     lastSignedIn: new Date(),
   };
   await db.insert(users).values(insertData);
@@ -141,7 +141,20 @@ export async function loginWithEmail(email: string, password: string) {
   const computed = hashWithSalt(password, u.passwordSalt);
   if (computed !== u.passwordHash) throw new Error("Invalid credentials");
   await db.update(users).set({ lastSignedIn: new Date(), updatedAt: new Date() }).where(eq(users.id, u.id));
-  return { id: u.id, name: u.name, email: u.email };
+  let role = u.role;
+  if (ENV.ownerEmail && email === ENV.ownerEmail && role !== 'admin') {
+    await db.update(users).set({ role: 'admin' as any, updatedAt: new Date() }).where(eq(users.id, u.id));
+    role = 'admin' as any;
+  }
+  const hasAdmin = await (async () => {
+    const rows = await db.select().from(users).where(eq(users.role, 'admin' as any)).limit(1);
+    return rows.length > 0;
+  })();
+  if (!hasAdmin) {
+    await db.update(users).set({ role: 'admin' as any, updatedAt: new Date() }).where(eq(users.id, u.id));
+    role = 'admin' as any;
+  }
+  return { id: u.id, name: u.name, email: u.email, role };
 }
 
 // Articles

@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { useLocation } from "wouter";
 import { Home, Video, Star, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 interface MobileLayoutProps {
   children: ReactNode;
@@ -9,6 +10,7 @@ interface MobileLayoutProps {
 
 export default function MobileLayout({ children }: MobileLayoutProps) {
   const [location, navigate] = useLocation();
+  const { user, isAuthenticated } = useAuth();
 
   const navItems = [
     { label: "Home", icon: Home, path: "/home" },
@@ -16,6 +18,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
     { label: "Favoritos", icon: Star, path: "/favorites" },
     { label: "Menu", icon: Menu, path: "/menu" },
   ];
+  const items = (isAuthenticated && user?.role === "admin") ? [{ label: "Admin", icon: Menu, path: "/admin" }, ...navItems] : navItems;
 
   const isActive = (path: string) => {
     if (path === "/home" && location === "/home") return true;
@@ -33,7 +36,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-border shadow-lg">
         <div className="flex justify-around items-center h-20 max-w-6xl mx-auto w-full">
-          {navItems.map((item) => {
+          {items.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.path);
             return (

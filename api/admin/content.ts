@@ -1,0 +1,42 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { setCors } from '../cors';
+import * as db from '../../db';
+
+function getSession(req: VercelRequest) {
+  const cookieHeader = (req.headers['cookie'] as string) || '';
+  const parts = cookieHeader.split(';').map((v) => v.trim());
+  const match = parts.find((p) => p.startsWith('session='));
+  const value = match ? decodeURIComponent(match.split('=')[1]) : '';
+  let user: any = null;
+  try { user = JSON.parse(value); } catch {}
+  return user;
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const ok = setCors(req, res);
+  if (req.method === 'OPTIONS') { res.status(204).end(); return; }
+  if (!ok) { res.status(403).end(); return; }
+  if (req.method !== 'POST') { res.status(405).json({ success: false, error: 'method_not_allowed' }); return; }
+
+  const me = getSession(req);
+  if (!me || me.role !== 'admin') { res.status(403).json({ success: false, error: 'forbidden' }); return; }
+  try {
+    const raw = await new Promise<string>((resolve) => {
+      let buf = ''; req.on('data', (c) => buf += c); req.on('end', () => resolve(buf));
+    });
+    const body = raw ? JSON.parse(raw) : {};
+    const type = String(body?.type || '').trim();
+    const data = body?.data || {};
+    let result: any = null;
+    if (type === 'article') result = await db.createArticle({ ...data, authorId: me.id });
+    else if (type === 'news') result = await db.createNews({ ...data, authorId: me.id });
+    else if (type === 'event') result = await db.createEvent(data);
+    else if (type === 'dailyWord') result = await db.createDailyWord(data);
+    else if (type === 'prayerReason') result = await db.createPrayerReason(data);
+    else if (type === 'gallery') result = await db.createGalleryItem({ ...data, uploadedBy: me.id });
+    else { res.status(400).json({ success: false, error: 'invalid_type' }); return; }
+    res.status(200).json({ success: true, result });
+  } catch (e: any) {
+    res.status(500).json({ success: false, error: 'unknown', detail: String(e?.message || '') });
+  }
+}

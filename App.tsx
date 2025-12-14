@@ -25,6 +25,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 
 function Router() {
   return (
@@ -38,6 +39,7 @@ function Router() {
               <Switch>
                 <Route path={"/home"} component={Home} />
                 <Route path={"/profile"} component={Profile} />
+                <Route path={"/admin"} component={Admin} />
                 <Route path={"/articles"} component={Articles} />
                 <Route path={"/news"} component={News} />
                 <Route path={"/events"} component={Events} />
