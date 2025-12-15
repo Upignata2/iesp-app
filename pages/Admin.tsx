@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 
 type ContentType = "article" | "news" | "event" | "dailyWord" | "prayerReason" | "gallery";
@@ -22,6 +22,10 @@ export default function Admin() {
   const [dailyWord, setDailyWord] = useState<any>({ date: "", title: "", content: "", reference: "" });
   const [prayerReason, setPrayerReason] = useState<any>({ title: "", description: "", priority: "medium" });
   const [gallery, setGallery] = useState<any>({ title: "", description: "", mediaUrl: "", mediaType: "image", eventId: "" });
+  const articleFileRef = useRef<HTMLInputElement | null>(null);
+  const newsFileRef = useRef<HTMLInputElement | null>(null);
+  const eventFileRef = useRef<HTMLInputElement | null>(null);
+  const galleryFileRef = useRef<HTMLInputElement | null>(null);
 
   const [roleEmail, setRoleEmail] = useState("");
   const [role, setRole] = useState("admin");
@@ -259,17 +263,17 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900">
+    <div className="min-h-screen pb-24 bg-white text-black">
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <h1 className="text-2xl font-bold mb-6 text-white text-center">Painel do Administrador</h1>
+        <h1 className="text-2xl font-bold mb-6 text-black text-center">Painel do Administrador</h1>
         <div className="grid md:grid-cols-2 gap-6">
-          <Card className="p-6 bg-indigo-950 border border-indigo-900 text-white rounded-2xl shadow-lg">
+          <Card className="p-6 bg-white border border-neutral-300 text-black rounded-2xl shadow-lg">
             <h2 className="font-bold mb-4">Criar Conteúdo</h2>
             <div className="space-y-3">
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as ContentType)}
-                className="w-full bg-indigo-900 border-indigo-800 rounded-xl p-2 text-white"
+                className="w-full bg-white border-neutral-300 rounded-xl p-2 text-black"
               >
                 <option value="article">Artigo</option>
                 <option value="news">Notícia</option>
@@ -281,68 +285,77 @@ export default function Admin() {
 
             {type === "article" && (
               <div className="space-y-3">
-                <Input placeholder="Título" value={article.title} onChange={(e) => setArticle({ ...article, title: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Descrição (opcional)" value={article.description} onChange={(e) => setArticle({ ...article, description: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <textarea placeholder="Conteúdo" value={article.content} onChange={(e) => setArticle({ ...article, content: e.target.value })} className="w-full bg-indigo-900 border-indigo-800 text-white rounded-xl p-2 h-28" />
-                <Input placeholder="Imagem URL (opcional)" value={article.imageUrl} onChange={(e) => setArticle({ ...article, imageUrl: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <input type="file" accept="image/*" capture="environment" onChange={async (e) => {
+                <Input placeholder="Título" value={article.title} onChange={(e) => setArticle({ ...article, title: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Descrição (opcional)" value={article.description} onChange={(e) => setArticle({ ...article, description: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <textarea placeholder="Conteúdo" value={article.content} onChange={(e) => setArticle({ ...article, content: e.target.value })} className="w-full bg-white border-neutral-300 text-black rounded-xl p-2 h-28" />
+                <Input placeholder="Imagem URL (opcional)" value={article.imageUrl} onChange={(e) => setArticle({ ...article, imageUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <input ref={articleFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
                   const f = e.target.files?.[0];
                   if (f) {
                     const url = await fileToDataUrl(f);
                     setArticle({ ...article, imageUrl: url });
                   }
                 }} />
+                <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => articleFileRef.current?.click()}>
+                  Escolher arquivo
+                </Button>
               </div>
             )}
 
             {type === "news" && (
               <div className="space-y-3">
-                <Input placeholder="Título" value={news.title} onChange={(e) => setNews({ ...news, title: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Descrição (opcional)" value={news.description} onChange={(e) => setNews({ ...news, description: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <textarea placeholder="Conteúdo" value={news.content} onChange={(e) => setNews({ ...news, content: e.target.value })} className="w-full bg-indigo-900 border-indigo-800 text-white rounded-xl p-2 h-28" />
-                <Input placeholder="Imagem URL (opcional)" value={news.imageUrl} onChange={(e) => setNews({ ...news, imageUrl: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <input type="file" accept="image/*" capture="environment" onChange={async (e) => {
+                <Input placeholder="Título" value={news.title} onChange={(e) => setNews({ ...news, title: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Descrição (opcional)" value={news.description} onChange={(e) => setNews({ ...news, description: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <textarea placeholder="Conteúdo" value={news.content} onChange={(e) => setNews({ ...news, content: e.target.value })} className="w-full bg-white border-neutral-300 text-black rounded-xl p-2 h-28" />
+                <Input placeholder="Imagem URL (opcional)" value={news.imageUrl} onChange={(e) => setNews({ ...news, imageUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <input ref={newsFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
                   const f = e.target.files?.[0];
                   if (f) {
                     const url = await fileToDataUrl(f);
                     setNews({ ...news, imageUrl: url });
                   }
                 }} />
+                <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => newsFileRef.current?.click()}>
+                  Escolher arquivo
+                </Button>
               </div>
             )}
 
             {type === "event" && (
               <div className="space-y-3">
-                <Input placeholder="Título" value={eventData.title} onChange={(e) => setEventData({ ...eventData, title: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Descrição (opcional)" value={eventData.description} onChange={(e) => setEventData({ ...eventData, description: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Local" value={eventData.location} onChange={(e) => setEventData({ ...eventData, location: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Data inicial (YYYY-MM-DD)" value={eventData.startDate} onChange={(e) => setEventData({ ...eventData, startDate: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Data final (YYYY-MM-DD) (opcional)" value={eventData.endDate} onChange={(e) => setEventData({ ...eventData, endDate: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Imagem URL (opcional)" value={eventData.imageUrl} onChange={(e) => setEventData({ ...eventData, imageUrl: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <input type="file" accept="image/*" capture="environment" onChange={async (e) => {
+                <Input placeholder="Título" value={eventData.title} onChange={(e) => setEventData({ ...eventData, title: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Descrição (opcional)" value={eventData.description} onChange={(e) => setEventData({ ...eventData, description: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Local" value={eventData.location} onChange={(e) => setEventData({ ...eventData, location: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Data inicial (YYYY-MM-DD)" value={eventData.startDate} onChange={(e) => setEventData({ ...eventData, startDate: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Data final (YYYY-MM-DD) (opcional)" value={eventData.endDate} onChange={(e) => setEventData({ ...eventData, endDate: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Imagem URL (opcional)" value={eventData.imageUrl} onChange={(e) => setEventData({ ...eventData, imageUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <input ref={eventFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
                   const f = e.target.files?.[0];
                   if (f) {
                     const url = await fileToDataUrl(f);
                     setEventData({ ...eventData, imageUrl: url });
                   }
                 }} />
+                <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => eventFileRef.current?.click()}>
+                  Escolher arquivo
+                </Button>
               </div>
             )}
 
             {type === "dailyWord" && (
               <div className="space-y-3">
-                <Input placeholder="Data (YYYY-MM-DD)" value={dailyWord.date} onChange={(e) => setDailyWord({ ...dailyWord, date: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Título" value={dailyWord.title} onChange={(e) => setDailyWord({ ...dailyWord, title: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <textarea placeholder="Conteúdo" value={dailyWord.content} onChange={(e) => setDailyWord({ ...dailyWord, content: e.target.value })} className="w-full bg-indigo-900 border-indigo-800 text-white rounded-xl p-2 h-28" />
-                <Input placeholder="Referência (opcional)" value={dailyWord.reference} onChange={(e) => setDailyWord({ ...dailyWord, reference: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
+                <Input placeholder="Data (YYYY-MM-DD)" value={dailyWord.date} onChange={(e) => setDailyWord({ ...dailyWord, date: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Título" value={dailyWord.title} onChange={(e) => setDailyWord({ ...dailyWord, title: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <textarea placeholder="Conteúdo" value={dailyWord.content} onChange={(e) => setDailyWord({ ...dailyWord, content: e.target.value })} className="w-full bg-white border-neutral-300 text-black rounded-xl p-2 h-28" />
+                <Input placeholder="Referência (opcional)" value={dailyWord.reference} onChange={(e) => setDailyWord({ ...dailyWord, reference: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
               </div>
             )}
 
             {type === "prayerReason" && (
               <div className="space-y-3">
-                <Input placeholder="Título" value={prayerReason.title} onChange={(e) => setPrayerReason({ ...prayerReason, title: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <textarea placeholder="Descrição" value={prayerReason.description} onChange={(e) => setPrayerReason({ ...prayerReason, description: e.target.value })} className="w-full bg-indigo-900 border-indigo-800 text-white rounded-xl p-2 h-28" />
-                <select value={prayerReason.priority} onChange={(e) => setPrayerReason({ ...prayerReason, priority: e.target.value })} className="w-full bg-indigo-900 border-indigo-800 rounded-xl p-2 text-white">
+                <Input placeholder="Título" value={prayerReason.title} onChange={(e) => setPrayerReason({ ...prayerReason, title: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <textarea placeholder="Descrição" value={prayerReason.description} onChange={(e) => setPrayerReason({ ...prayerReason, description: e.target.value })} className="w-full bg-white border-neutral-300 text-black rounded-xl p-2 h-28" />
+                <select value={prayerReason.priority} onChange={(e) => setPrayerReason({ ...prayerReason, priority: e.target.value })} className="w-full bg-white border-neutral-300 rounded-xl p-2 text-black">
                   <option value="low">Baixa</option>
                   <option value="medium">Média</option>
                   <option value="high">Alta</option>
@@ -352,14 +365,16 @@ export default function Admin() {
 
             {type === "gallery" && (
               <div className="space-y-3">
-                <Input placeholder="Título" value={gallery.title} onChange={(e) => setGallery({ ...gallery, title: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="Descrição (opcional)" value={gallery.description} onChange={(e) => setGallery({ ...gallery, description: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-                <Input placeholder="URL da mídia" value={gallery.mediaUrl} onChange={(e) => setGallery({ ...gallery, mediaUrl: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
+                <Input placeholder="Título" value={gallery.title} onChange={(e) => setGallery({ ...gallery, title: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="Descrição (opcional)" value={gallery.description} onChange={(e) => setGallery({ ...gallery, description: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input placeholder="URL da mídia" value={gallery.mediaUrl} onChange={(e) => setGallery({ ...gallery, mediaUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
                 <input
+                  ref={galleryFileRef}
                   type="file"
                   accept="image/*,video/*"
                   capture="environment"
                   multiple
+                  className="hidden"
                   onChange={async (e) => {
                     const files = Array.from(e.target.files || []);
                     if (files.length > 0) {
@@ -369,59 +384,62 @@ export default function Admin() {
                     }
                   }}
                 />
-                <select value={gallery.mediaType} onChange={(e) => setGallery({ ...gallery, mediaType: e.target.value })} className="w-full bg-indigo-900 border-indigo-800 rounded-xl p-2 text-white">
+                <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => galleryFileRef.current?.click()}>
+                  Escolher arquivo
+                </Button>
+                <select value={gallery.mediaType} onChange={(e) => setGallery({ ...gallery, mediaType: e.target.value })} className="w-full bg-white border-neutral-300 rounded-xl p-2 text-black">
                   <option value="image">Imagem</option>
                   <option value="video">Vídeo</option>
                 </select>
-                <Input placeholder="ID do Evento (opcional)" value={gallery.eventId} onChange={(e) => setGallery({ ...gallery, eventId: e.target.value })} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
+                <Input placeholder="ID do Evento (opcional)" value={gallery.eventId} onChange={(e) => setGallery({ ...gallery, eventId: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
               </div>
             )}
 
-            <Button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl" onClick={submitContent}>
+            <Button disabled={loading} variant="outline" className="w-full bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={submitContent}>
               {loading ? "Publicando..." : "Publicar"}
             </Button>
-            <Button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl" onClick={updateContent}>
+            <Button disabled={loading} variant="outline" className="w-full bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={updateContent}>
               {loading ? "Atualizando..." : "Salvar Edição"}
             </Button>
-            <Button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl" onClick={() => deleteContent()}>
+            <Button disabled={loading} variant="outline" className="w-full bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={() => deleteContent()}>
               {loading ? "Excluindo..." : "Excluir Selecionado"}
             </Button>
             </div>
           </Card>
 
-          <Card className="p-6 bg-indigo-950 border border-indigo-900 text-white rounded-2xl shadow-lg">
+          <Card className="p-6 bg-white border border-neutral-300 text-black rounded-2xl shadow-lg">
             <h2 className="font-bold mb-4">Gerenciar Permissões</h2>
             <div className="space-y-3">
-              <Input placeholder="E-mail do usuário" value={roleEmail} onChange={(e) => setRoleEmail(e.target.value)} className="bg-indigo-900 border-indigo-800 text-white rounded-xl" />
-              <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full bg-indigo-900 border-indigo-800 rounded-xl p-2 text-white">
+              <Input placeholder="E-mail do usuário" value={roleEmail} onChange={(e) => setRoleEmail(e.target.value)} className="bg-white border-neutral-300 text-black rounded-xl" />
+              <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full bg-white border-neutral-300 rounded-xl p-2 text-black">
                 <option value="admin">Admin</option>
                 <option value="user">Usuário</option>
               </select>
-              <Button disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl" onClick={submitRole}>
+              <Button disabled={loading} variant="outline" className="w-full bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={submitRole}>
                 {loading ? "Atualizando..." : "Atualizar Permissão"}
               </Button>
             </div>
           </Card>
         </div>
-        <Card className="mt-6 p-6 bg-indigo-950 border border-indigo-900 text-white rounded-2xl shadow-lg">
+        <Card className="mt-6 p-6 bg-white border border-neutral-300 text-black rounded-2xl shadow-lg">
           <h2 className="font-bold mb-4">Conteúdos ({type})</h2>
           <div className="space-y-2">
             {items.map((it) => (
-              <div key={it.id} className={`flex items-center justify-between p-3 rounded-lg ${selectedId === it.id ? "bg-indigo-950" : "bg-indigo-900"}`}>
+              <div key={it.id} className={`flex items-center justify-between p-3 rounded-lg border ${selectedId === it.id ? "bg-neutral-100 border-neutral-300" : "bg-white border-neutral-300"}`}>
                 <div>
                   <div className="text-sm font-semibold">{it.title || it.date || `#${it.id}`}</div>
                   <div className="text-xs opacity-70">ID: {it.id}</div>
                 </div>
                 <div className="flex gap-2">
-                  <Button className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl" onClick={() => loadItemToForm(it)}>Editar</Button>
-                  <Button className="bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl" onClick={() => deleteContent(it.id)}>Excluir</Button>
+                  <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={() => loadItemToForm(it)}>Editar</Button>
+                  <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={() => deleteContent(it.id)}>Excluir</Button>
                 </div>
               </div>
             ))}
             {items.length === 0 && <div className="text-sm opacity-70">Nenhum conteúdo encontrado.</div>}
           </div>
         </Card>
-        {msg && <div className="mt-4 text-sm text-white">{msg}</div>}
+        {msg && <div className="mt-4 text-sm text-black">{msg}</div>}
       </div>
     </div>
   );

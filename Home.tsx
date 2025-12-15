@@ -34,10 +34,10 @@ export default function Home() {
 
   if (!initialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-50 to-white">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <Loader2 className="animate-spin w-12 h-12 text-primary mx-auto mb-4" />
-          <p className="text-foreground">Carregando...</p>
+          <Loader2 className="animate-spin w-12 h-12 text-black mx-auto mb-4" />
+          <p className="text-black">Carregando...</p>
         </div>
       </div>
     );
@@ -53,12 +53,12 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen pb-24 bg-gradient-to-b from-slate-950 via-indigo-950 to-slate-900">
+    <div className="min-h-screen pb-24 bg-white">
       <div className="max-w-6xl mx-auto px-4 py-6">
           {isAuthenticated && (
             <Button
-              className="absolute top-4 right-4 bg-white/10 hover:bg-white/20 text-white ring-1 ring-white/20"
-              variant="outline"
+              className="absolute top-4 right-4 text-black"
+              variant="ghost"
               size="sm"
               onClick={async () => {
                 await logout();
@@ -68,14 +68,14 @@ export default function Home() {
               Sair
             </Button>
           )}
-          <div className="mx-1 mb-6 text-center text-white">
+          <div className="mx-1 mb-6 text-center text-black">
             <div className="text-5xl font-bold tracking-wide">IESP</div>
           </div>
           {!isAuthenticated ? (
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-3">
-                <Button size="lg" className="bg-white text-blue-700" onClick={() => navigate('/login')}>Login</Button>
-                <Button size="lg" variant="secondary" className="bg-white/90 text-blue-700" onClick={() => navigate('/register')}>Registrar</Button>
+                <Button size="lg" className="bg-white text-black border border-gray-300" onClick={() => navigate('/login')}>Login</Button>
+                <Button size="lg" className="bg-white text-black border border-gray-300" onClick={() => navigate('/register')}>Registrar</Button>
               </div>
             </div>
           ) : (
@@ -87,10 +87,10 @@ export default function Home() {
               const Icon = item.icon;
               return (
                 <button key={item.id} onClick={() => handleClick(item.route)} className="group flex flex-col items-center gap-3 transition-transform hover:scale-105">
-                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-white/10 backdrop-blur-md ring-1 ring-white/20 text-white shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-gray-200 ring-1 ring-gray-300 text-black shadow-sm">
                     <Icon className="w-7 h-7" />
                   </div>
-                  <span className="text-xs text-white/80">{item.label}</span>
+                  <span className="text-xs text-black">{item.label}</span>
                 </button>
               );
             })}

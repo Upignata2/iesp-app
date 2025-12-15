@@ -20,7 +20,7 @@ export default function MobileLayout({ children }) {
             return true;
         return false;
     };
-    return (_jsxs("div", { className: "flex flex-col min-h-screen bg-background", children: [_jsx("main", { className: "flex-1 overflow-y-auto pb-20", children: children }), _jsx("nav", { className: "fixed bottom-0 left-0 right-0 bg-white border-t border-border shadow-lg", children: _jsx("div", { className: "flex justify-around items-center h-20 max-w-6xl mx-auto w-full", children: items.map((item) => {
+    return (_jsxs("div", { className: "flex flex-col min-h-screen bg-background", children: [_jsx("main", { className: "flex-1 overflow-y-auto pb-20", children: children }), _jsx("nav", { className: "fixed bottom-0 left-0 right-0 bg-[#D2D7DB] border-t border-border shadow-lg", children: _jsx("div", { className: "flex justify-around items-center h-20 max-w-6xl mx-auto w-full", children: items.map((item) => {
                         const Icon = item.icon;
                         const active = isActive(item.path);
                         return (_jsxs("button", { onClick: () => navigate(item.path), className: cn("flex flex-col items-center justify-center w-full h-full gap-1 transition-colors", active

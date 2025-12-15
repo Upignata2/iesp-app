@@ -34,7 +34,7 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-border shadow-lg">
+      <nav className="fixed bottom-0 left-0 right-0 bg-[#D2D7DB] border-t border-border shadow-lg">
         <div className="flex justify-around items-center h-20 max-w-6xl mx-auto w-full">
           {items.map((item) => {
             const Icon = item.icon;

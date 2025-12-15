@@ -39,9 +39,9 @@ export default function SplashScreen() {
 
       {/* Loading Indicator */}
       <div className="flex gap-2 mt-8">
-        <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
-        <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
-        <div className="w-3 h-3 bg-white rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
+        <div className="w-3 h-3 bg-[#D2D7DB] rounded-full animate-bounce" style={{ animationDelay: "0s" }}></div>
+        <div className="w-3 h-3 bg-[#D2D7DB] rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+        <div className="w-3 h-3 bg-[#D2D7DB] rounded-full animate-bounce" style={{ animationDelay: "0.4s" }}></div>
       </div>
     </div>
   );

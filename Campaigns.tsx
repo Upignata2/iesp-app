@@ -36,7 +36,7 @@ export default function Campaigns() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Voltar
         </Button>
-        <article className="bg-white rounded-lg shadow-lg p-6">
+        <article className="bg-[#D2D7DB] rounded-lg shadow-lg p-6">
           {campaign.imageUrl && (
             <img
               src={campaign.imageUrl}

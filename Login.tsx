@@ -54,7 +54,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white text-black flex items-center justify-center p-4">
       <div className="absolute top-6 left-0 right-0 text-center">
         <img 
           src={APP_LOGO} 
@@ -64,8 +64,8 @@ export default function Login() {
         />
         <div className="text-sm opacity-80">IESP</div>
       </div>
-      <Card className="w-full max-w-md p-8 bg-neutral-950 border border-neutral-800 text-white rounded-2xl shadow-xl">
-        <h2 className="text-center text-sm font-semibold text-neutral-300 mb-6">LOGIN</h2>
+      <Card className="w-full max-w-md p-8 bg-white border border-neutral-300 text-black rounded-2xl shadow-xl">
+        <h2 className="text-center text-sm font-semibold text-neutral-600 mb-6">LOGIN</h2>
 
         <form onSubmit={handleEmailLogin} className="space-y-4 mb-6">
           <div>
@@ -76,7 +76,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="seu@email.com"
               required
-              className="bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-500 rounded-xl"
+              className="bg-white border-neutral-300 text-black placeholder:text-neutral-500 rounded-xl"
             />
           </div>
           <div>
@@ -87,13 +87,13 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="bg-neutral-900 border-neutral-700 text-white placeholder:text-neutral-500 rounded-xl"
+              className="bg-white border-neutral-300 text-black placeholder:text-neutral-500 rounded-xl"
             />
             <div className="mt-2 text-right">
               <button
                 type="button"
                 onClick={() => navigate("/forgot-password")}
-                className="text-xs text-neutral-300 hover:text-white underline"
+                className="text-xs text-neutral-600 hover:text-black underline"
               >
                 Esqueceu minha senha.
               </button>
@@ -116,11 +116,11 @@ export default function Login() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-neutral-400">
+        <p className="text-center text-sm text-neutral-600">
           Não tem conta?{" "}
           <button
             onClick={() => navigate("/register")}
-            className="text-white hover:underline font-medium"
+            className="text-black hover:underline font-medium"
           >
             Registre-se
           </button>
