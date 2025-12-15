@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { uploadFile } from "@/_core/supabase";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 type GalleryItem = {
   id: number;
@@ -14,11 +15,19 @@ type GalleryItem = {
   eventId?: number | null;
 };
 
+type GroupedGallery = {
+  title: string;
+  items: GalleryItem[];
+  thumbnail?: GalleryItem;
+};
+
 export default function Gallery() {
   const { user, initialized, isAuthenticated } = useAuth();
   const [items, setItems] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<GroupedGallery | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -29,12 +38,28 @@ export default function Gallery() {
 
   const canAdmin = useMemo(() => isAuthenticated && user?.role === "admin", [isAuthenticated, user]);
 
+  // Agrupar itens por título (evento)
+  const groupedItems = useMemo(() => {
+    const groups: Record<string, GalleryItem[]> = {};
+    items.forEach((item) => {
+      const key = item.title || "Sem título";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(item);
+    });
+
+    return Object.entries(groups).map(([title, items]) => ({
+      title,
+      items,
+      thumbnail: items.find((it) => it.mediaType === "image") || items[0],
+    }));
+  }, [items]);
+
   async function handleFileUpload(file: File): Promise<string> {
     try {
-      const url = await uploadFile(file, 'gallery');
+      const url = await uploadFile(file, "gallery");
       return url;
     } catch (error) {
-      console.error('Upload error:', error);
+      console.error("Upload error:", error);
       throw error;
     }
   }
@@ -42,9 +67,9 @@ export default function Gallery() {
   async function refreshList() {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/content?type=gallery&limit=50`, { credentials: "include" });
+      const res = await fetch(`/api/admin/content?type=gallery&limit=100`, { credentials: "include" });
       const data = await res.json();
-      const list = Array.isArray(data?.result) ? data.result : (data?.result ? [data.result] : []);
+      const list = Array.isArray(data?.result) ? data.result : data?.result ? [data.result] : [];
       setItems(list as GalleryItem[]);
     } catch {
       setItems([]);
@@ -68,7 +93,10 @@ export default function Gallery() {
   async function publish() {
     setMsg("");
     const error = validate();
-    if (error) { setMsg(error); return; }
+    if (error) {
+      setMsg(error);
+      return;
+    }
     setLoading(true);
     try {
       const payload = {
@@ -113,13 +141,18 @@ export default function Gallery() {
       });
       const data = await res.json();
       setMsg(data?.success ? "Item excluído." : "Erro: " + (data?.error || "falha"));
-      if (data?.success) refreshList();
+      if (data?.success) {
+        refreshList();
+        setSelectedGroup(null);
+      }
     } catch {
       setMsg("Erro ao excluir");
     } finally {
       setLoading(false);
     }
   }
+
+  const currentMedia = selectedGroup?.items[currentIndex];
 
   return (
     <div className="min-h-screen pb-24 bg-white text-black">
@@ -130,14 +163,33 @@ export default function Gallery() {
           <Card className="p-6 bg-white border border-neutral-300 text-black rounded-2xl shadow-sm mb-6">
             <h2 className="font-bold mb-4">Adicionar Mídia</h2>
             <div className="space-y-3">
-              <Input placeholder="Título" value={title} onChange={(e) => setTitle(e.target.value)} className="bg-white border-neutral-300 text-black rounded-xl" />
-              <Input placeholder="Descrição (opcional)" value={description} onChange={(e) => setDescription(e.target.value)} className="bg-white border-neutral-300 text-black rounded-xl" />
+              <Input
+                placeholder="Título (Nome do Evento)"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="bg-white border-neutral-300 text-black rounded-xl"
+              />
+              <Input
+                placeholder="Descrição (opcional)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="bg-white border-neutral-300 text-black rounded-xl"
+              />
               <div className="flex items-center gap-2">
-                <select value={mediaType} onChange={(e) => setMediaType(e.target.value as any)} className="bg-white border-neutral-300 text-black rounded-xl p-2">
+                <select
+                  value={mediaType}
+                  onChange={(e) => setMediaType(e.target.value as any)}
+                  className="bg-white border-neutral-300 text-black rounded-xl p-2"
+                >
                   <option value="image">Imagem</option>
                   <option value="video">Vídeo</option>
                 </select>
-                <Input placeholder="ID do Evento (opcional)" value={eventId} onChange={(e) => setEventId(e.target.value)} className="bg-white border-neutral-300 text-black rounded-xl" />
+                <Input
+                  placeholder="ID do Evento (opcional)"
+                  value={eventId}
+                  onChange={(e) => setEventId(e.target.value)}
+                  className="bg-white border-neutral-300 text-black rounded-xl"
+                />
               </div>
               <input
                 ref={fileRef}
@@ -164,10 +216,20 @@ export default function Gallery() {
                   }
                 }}
               />
-              <Button type="button" variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={() => fileRef.current?.click()}>
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl"
+                onClick={() => fileRef.current?.click()}
+              >
                 Escolher arquivo
               </Button>
-              <Button disabled={loading} variant="outline" className="w-full bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" onClick={publish}>
+              <Button
+                disabled={loading}
+                variant="outline"
+                className="w-full bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl"
+                onClick={publish}
+              >
                 {loading ? "Publicando..." : "Publicar"}
               </Button>
             </div>
@@ -175,31 +237,165 @@ export default function Gallery() {
           </Card>
         )}
 
-        <Card className="p-6 bg-white border border-neutral-300 text-black rounded-2xl shadow-sm">
-          <h2 className="font-bold mb-4">Itens</h2>
+        {/* Galeria Pública - Cards por Evento */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4 text-black">Eventos</h2>
           {loading && <div className="text-sm opacity-70">Carregando...</div>}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {items.map((it) => (
-              <div key={it.id} className="bg-white border border-neutral-300 rounded-xl p-3">
-                <div className="text-sm font-semibold mb-2 text-black">{it.title}</div>
-                {it.mediaType === "image" ? (
-                  <img src={it.mediaUrl} alt={it.title} className="w-full h-40 object-cover rounded-lg" />
-                ) : (
-                  <video src={it.mediaUrl} controls className="w-full h-40 rounded-lg" />
-                )}
-                {canAdmin && (
-                  <div className="mt-2">
-                    <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl w-full" onClick={() => deleteItem(it.id)}>
-                      Excluir
-                    </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {groupedItems.map((group, idx) => (
+              <Card
+                key={idx}
+                className="bg-white border border-neutral-300 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                onClick={() => {
+                  setSelectedGroup(group);
+                  setCurrentIndex(0);
+                }}
+              >
+                <div className="relative h-48 bg-neutral-100">
+                  {group.thumbnail ? (
+                    group.thumbnail.mediaType === "image" ? (
+                      <img
+                        src={group.thumbnail.mediaUrl}
+                        alt={group.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-neutral-200">
+                        <div className="text-center">
+                          <div className="text-3xl mb-2">🎥</div>
+                          <div className="text-xs text-neutral-600">Vídeo</div>
+                        </div>
+                      </div>
+                    )
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-neutral-200">
+                      <div className="text-neutral-400">Sem mídia</div>
+                    </div>
+                  )}
+                  <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                    {group.items.length} {group.items.length === 1 ? "item" : "itens"}
                   </div>
-                )}
-              </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold text-black mb-1">{group.title}</h3>
+                  <p className="text-xs text-neutral-600">Clique para visualizar</p>
+                </div>
+              </Card>
             ))}
-            {items.length === 0 && !loading && <div className="text-sm opacity-70">Nenhum item encontrado.</div>}
+            {groupedItems.length === 0 && !loading && (
+              <div className="col-span-full text-center text-sm opacity-70 py-8">
+                Nenhum evento encontrado.
+              </div>
+            )}
           </div>
-        </Card>
+        </div>
       </div>
+
+      {/* Modal Lightbox */}
+      {selectedGroup && currentMedia && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl">
+            {/* Fechar */}
+            <button
+              onClick={() => setSelectedGroup(null)}
+              className="absolute -top-10 right-0 text-white hover:text-neutral-300 transition"
+            >
+              <X size={32} />
+            </button>
+
+            {/* Título */}
+            <div className="text-white text-center mb-4">
+              <h2 className="text-2xl font-bold">{selectedGroup.title}</h2>
+              <p className="text-sm text-neutral-400">
+                {currentIndex + 1} de {selectedGroup.items.length}
+              </p>
+            </div>
+
+            {/* Mídia */}
+            <div className="relative bg-black rounded-lg overflow-hidden mb-4">
+              {currentMedia.mediaType === "image" ? (
+                <img
+                  src={currentMedia.mediaUrl}
+                  alt={currentMedia.title}
+                  className="w-full h-auto max-h-[70vh] object-contain"
+                />
+              ) : (
+                <video
+                  src={currentMedia.mediaUrl}
+                  controls
+                  className="w-full h-auto max-h-[70vh] object-contain"
+                />
+              )}
+            </div>
+
+            {/* Descrição */}
+            {currentMedia.description && (
+              <div className="text-white text-center mb-4 text-sm">
+                {currentMedia.description}
+              </div>
+            )}
+
+            {/* Navegação */}
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setCurrentIndex(Math.max(0, currentIndex - 1))}
+                disabled={currentIndex === 0}
+                className="text-white hover:text-neutral-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <ChevronLeft size={40} />
+              </button>
+
+              {/* Thumbnails */}
+              <div className="flex gap-2 overflow-x-auto px-4 flex-1 justify-center">
+                {selectedGroup.items.map((item, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`flex-shrink-0 w-16 h-16 rounded border-2 transition ${
+                      idx === currentIndex ? "border-white" : "border-neutral-600"
+                    }`}
+                  >
+                    {item.mediaType === "image" ? (
+                      <img
+                        src={item.mediaUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover rounded"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-neutral-700 rounded">
+                        <div className="text-white text-xs">🎥</div>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() =>
+                  setCurrentIndex(Math.min(selectedGroup.items.length - 1, currentIndex + 1))
+                }
+                disabled={currentIndex === selectedGroup.items.length - 1}
+                className="text-white hover:text-neutral-300 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              >
+                <ChevronRight size={40} />
+              </button>
+            </div>
+
+            {/* Botão Excluir (Admin) */}
+            {canAdmin && (
+              <div className="mt-4 flex justify-center">
+                <Button
+                  variant="outline"
+                  className="bg-red-600 hover:bg-red-700 text-white border-red-700 rounded-xl"
+                  onClick={() => deleteItem(currentMedia.id)}
+                >
+                  Excluir Mídia
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
