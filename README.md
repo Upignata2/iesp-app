@@ -4,7 +4,7 @@ Um aplicativo móvel nativo para Android com funcionalidades completas de conte�
 
 ## ✨ Características
 
-- **Autenticação Segura**: Login com Manus OAuth e e-mail/senha
+- **Autenticação Segura**: Login com e-mail/senha
 - **Conteúdo Dinâmico**: Artigos, notícias, eventos, hinário e palavra do dia
 - **Sistema de Favoritos**: Salve seus conteúdos favoritos
 - **Pagamentos Integrados**: PIX, Mercado Pago e cartão de crédito
