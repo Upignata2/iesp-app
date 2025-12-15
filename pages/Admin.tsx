@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { uploadFile } from "@/_core/supabase";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 
@@ -230,13 +231,14 @@ export default function Admin() {
     }
   }
 
-  async function fileToDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  async function handleFileUpload(file: File): Promise<string> {
+    try {
+      const url = await uploadFile(file, 'gallery');
+      return url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
   }
 
   async function submitRole() {
@@ -292,8 +294,16 @@ export default function Admin() {
                 <input ref={articleFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
                   const f = e.target.files?.[0];
                   if (f) {
-                    const url = await fileToDataUrl(f);
-                    setArticle({ ...article, imageUrl: url });
+                    try {
+                      setLoading(true);
+                      const url = await handleFileUpload(f);
+                      setArticle({ ...article, imageUrl: url });
+                      setMsg("Imagem enviada com sucesso!");
+                    } catch (error) {
+                      setMsg("Erro ao enviar imagem: " + String(error));
+                    } finally {
+                      setLoading(false);
+                    }
                   }
                 }} />
                 <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => articleFileRef.current?.click()}>
@@ -311,8 +321,16 @@ export default function Admin() {
                 <input ref={newsFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
                   const f = e.target.files?.[0];
                   if (f) {
-                    const url = await fileToDataUrl(f);
-                    setNews({ ...news, imageUrl: url });
+                    try {
+                      setLoading(true);
+                      const url = await handleFileUpload(f);
+                      setNews({ ...news, imageUrl: url });
+                      setMsg("Imagem enviada com sucesso!");
+                    } catch (error) {
+                      setMsg("Erro ao enviar imagem: " + String(error));
+                    } finally {
+                      setLoading(false);
+                    }
                   }
                 }} />
                 <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => newsFileRef.current?.click()}>
@@ -332,8 +350,16 @@ export default function Admin() {
                 <input ref={eventFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
                   const f = e.target.files?.[0];
                   if (f) {
-                    const url = await fileToDataUrl(f);
-                    setEventData({ ...eventData, imageUrl: url });
+                    try {
+                      setLoading(true);
+                      const url = await handleFileUpload(f);
+                      setEventData({ ...eventData, imageUrl: url });
+                      setMsg("Imagem enviada com sucesso!");
+                    } catch (error) {
+                      setMsg("Erro ao enviar imagem: " + String(error));
+                    } finally {
+                      setLoading(false);
+                    }
                   }
                 }} />
                 <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => eventFileRef.current?.click()}>
@@ -379,8 +405,16 @@ export default function Admin() {
                     const files = Array.from(e.target.files || []);
                     if (files.length > 0) {
                       const f = files[0];
-                      const url = await fileToDataUrl(f);
-                      setGallery({ ...gallery, mediaUrl: url, mediaType: f.type.startsWith("video") ? "video" : "image" });
+                      try {
+                        setLoading(true);
+                        const url = await handleFileUpload(f);
+                        setGallery({ ...gallery, mediaUrl: url, mediaType: f.type.startsWith("video") ? "video" : "image" });
+                        setMsg("Arquivo enviado com sucesso!");
+                      } catch (error) {
+                        setMsg("Erro ao enviar arquivo: " + String(error));
+                      } finally {
+                        setLoading(false);
+                      }
                     }
                   }}
                 />

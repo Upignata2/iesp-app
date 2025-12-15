@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { uploadFile } from "@/_core/supabase";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 type GalleryItem = {
@@ -28,13 +29,14 @@ export default function Gallery() {
 
   const canAdmin = useMemo(() => isAuthenticated && user?.role === "admin", [isAuthenticated, user]);
 
-  async function fileToDataUrl(file: File): Promise<string> {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  async function handleFileUpload(file: File): Promise<string> {
+    try {
+      const url = await uploadFile(file, 'gallery');
+      return url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      throw error;
+    }
   }
 
   async function refreshList() {
@@ -148,9 +150,17 @@ export default function Gallery() {
                   const files = Array.from(e.target.files || []);
                   if (files.length > 0) {
                     const f = files[0];
-                    const url = await fileToDataUrl(f);
-                    setMediaUrl(url);
-                    setMediaType(f.type.startsWith("video") ? "video" : "image");
+                    try {
+                      setLoading(true);
+                      const url = await handleFileUpload(f);
+                      setMediaUrl(url);
+                      setMediaType(f.type.startsWith("video") ? "video" : "image");
+                      setMsg("Arquivo enviado com sucesso!");
+                    } catch (error) {
+                      setMsg("Erro ao enviar arquivo: " + String(error));
+                    } finally {
+                      setLoading(false);
+                    }
                   }
                 }}
               />
