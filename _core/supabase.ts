@@ -2,8 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://ugybcgubtvrjyodcegei.supabase.co';
 const supabaseAnonKey = 'sb_publishable_nShPs5nsxdNzxQ4PnkxDfg_18aZH9s1';
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVneWJjZ3VidHZyanlvZGNlZ2VpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTEzMzQ0NSwiZXhwIjoyMDgwNzA5NDQ1fQ.Cw5IdJRGlp8nCEYFsQinOL3HKibJVqhrv_WGbIzgcVk';
 
+// Cliente público para leitura
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Cliente com service key para uploads (contorna RLS)
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 /**
  * Upload a file to Supabase Storage
@@ -18,8 +23,8 @@ export async function uploadFile(file: File, bucket: string = 'gallery'): Promis
     const randomStr = Math.random().toString(36).substring(2, 8);
     const filename = `${timestamp}-${randomStr}-${file.name}`;
 
-    // Upload file to Supabase Storage
-    const { data, error } = await supabase.storage
+    // Upload file to Supabase Storage using admin client (contorna RLS)
+    const { data, error } = await supabaseAdmin.storage
       .from(bucket)
       .upload(filename, file, {
         cacheControl: '3600',
