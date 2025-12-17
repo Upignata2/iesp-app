@@ -1,8 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { uploadFile } from "@/_core/supabase";
+ import { Input } from "@/components/ui/input";
+ import { listGalleryFiles } from "@/_core/supabase";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
@@ -19,6 +19,7 @@ type GroupedGallery = {
   title: string;
   items: GalleryItem[];
   thumbnail?: GalleryItem;
+  description?: string | null;
 };
 
 export default function Gallery() {
@@ -40,37 +41,60 @@ export default function Gallery() {
 
   // Agrupar itens por título (evento)
   const groupedItems = useMemo(() => {
-    const groups: Record<string, GalleryItem[]> = {};
+    const byKey: Record<string, GalleryItem[]> = {};
     items.forEach((item) => {
-      const key = item.title || "Sem título";
-      if (!groups[key]) groups[key] = [];
-      groups[key].push(item);
+      const key = item.eventId ? `event:${item.eventId}` : (item.title || "Sem título");
+      if (!byKey[key]) byKey[key] = [];
+      byKey[key].push(item);
     });
-
-    return Object.entries(groups).map(([title, items]) => ({
-      title,
-      items,
-      thumbnail: items.find((it) => it.mediaType === "image") || items[0],
-    }));
+    return Object.entries(byKey).map(([key, groupItems]) => {
+      const any = groupItems[0];
+      const title = any.eventId ? (any.title || `Evento ${any.eventId}`) : (any.title || "Sem título");
+      return {
+        title,
+        items: groupItems,
+        thumbnail: groupItems.find((it) => it.mediaType === "image") || groupItems[0],
+        description: any.description || null,
+      } as GroupedGallery;
+    });
   }, [items]);
 
-  async function handleFileUpload(file: File): Promise<string> {
-    try {
-      const url = await uploadFile(file, "gallery");
-      return url;
-    } catch (error) {
-      console.error("Upload error:", error);
-      throw error;
-    }
-  }
+  
 
   async function refreshList() {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/content?type=gallery&limit=100`, { credentials: "include" });
-      const data = await res.json();
-      const list = Array.isArray(data?.result) ? data.result : data?.result ? [data.result] : [];
-      setItems(list as GalleryItem[]);
+      let list: any[] = [];
+      try {
+        const res = await fetch(`/api/gallery?limit=100`, { credentials: "include" });
+        if (res.ok) {
+          const data = await res.json();
+          list = Array.isArray(data?.result) ? data.result : data?.result ? [data.result] : [];
+        }
+      } catch {}
+      if (!list.length) {
+        const files = await listGalleryFiles('gallery');
+        if (files.length) {
+          list = files.map((f, idx) => ({
+            id: idx + 1,
+            title: f.name.replace(/\.[^.]+$/, ''),
+            description: null,
+            mediaUrl: f.publicUrl,
+            mediaType: f.mediaType,
+            eventId: null,
+          }));
+        }
+      }
+      if (!list.length) {
+        try {
+          const res2 = await fetch(`/api/admin/content?type=gallery&limit=100`, { credentials: "include" });
+          if (res2.ok) {
+            const data2 = await res2.json();
+            list = Array.isArray(data2?.result) ? data2.result : data2?.result ? [data2.result] : [];
+          }
+        } catch {}
+      }
+      setItems((list || []) as GalleryItem[]);
     } catch {
       setItems([]);
     } finally {
@@ -165,17 +189,17 @@ export default function Gallery() {
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-4 text-black">Eventos</h2>
           {loading && <div className="text-sm opacity-70">Carregando...</div>}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {groupedItems.map((group, idx) => (
               <Card
                 key={idx}
-                className="bg-white border border-neutral-300 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                className="bg-white border border-neutral-300 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                 onClick={() => {
                   setSelectedGroup(group);
                   setCurrentIndex(0);
                 }}
               >
-                <div className="relative h-48 bg-neutral-100">
+                <div className="relative h-36 bg-neutral-100">
                   {group.thumbnail ? (
                     group.thumbnail.mediaType === "image" ? (
                       <img
@@ -196,13 +220,17 @@ export default function Gallery() {
                       <div className="text-neutral-400">Sem mídia</div>
                     </div>
                   )}
-                  <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                  <div className="absolute top-1 right-1 bg-black bg-opacity-70 text-white px-2 py-0.5 rounded text-[10px]">
                     {group.items.length} {group.items.length === 1 ? "item" : "itens"}
                   </div>
                 </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-black mb-1">{group.title}</h3>
-                  <p className="text-xs text-neutral-600">Clique para visualizar</p>
+                <div className="p-3">
+                  <h3 className="font-semibold text-black text-sm mb-1 line-clamp-1">{group.title}</h3>
+                  {group.description ? (
+                    <p className="text-xs text-neutral-600 line-clamp-2">{group.description}</p>
+                  ) : (
+                    <p className="text-[11px] text-neutral-500">Clique para visualizar</p>
+                  )}
                 </div>
               </Card>
             ))}

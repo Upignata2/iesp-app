@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { uploadFile } from "@/_core/supabase";
+import { handleFileUpload } from "@/_core/supabase";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "wouter";
 
@@ -23,6 +23,10 @@ export default function Admin() {
   const [dailyWord, setDailyWord] = useState<any>({ date: "", title: "", content: "", reference: "" });
   const [prayerReason, setPrayerReason] = useState<any>({ title: "", description: "", priority: "medium" });
   const [gallery, setGallery] = useState<any>({ title: "", description: "", mediaUrl: "", mediaType: "image", eventId: "" });
+  const [articleFile, setArticleFile] = useState<File | null>(null);
+  const [newsFile, setNewsFile] = useState<File | null>(null);
+  const [eventImageFile, setEventImageFile] = useState<File | null>(null);
+  const [galleryFile, setGalleryFile] = useState<File | null>(null);
   const articleFileRef = useRef<HTMLInputElement | null>(null);
   const newsFileRef = useRef<HTMLInputElement | null>(null);
   const eventFileRef = useRef<HTMLInputElement | null>(null);
@@ -102,9 +106,11 @@ export default function Admin() {
       return null;
     }
     if (type === "gallery") {
-      if (!currentForm.title?.trim()) return "Título é obrigatório";
-      if (!currentForm.mediaUrl?.trim()) return "URL da mídia é obrigatório";
-      if (!currentForm.mediaType) return "Tipo de mídia é obrigatório";
+      if (!gallery.title?.trim()) return "Título é obrigatório";
+      const hasFile = !!galleryFile;
+      const hasUrl = !!gallery.mediaUrl?.trim();
+      if (!hasFile && !hasUrl) return "Selecione um arquivo ou informe a URL";
+      if (!gallery.mediaType) return "Tipo de mídia é obrigatório";
       return null;
     }
     return null;
@@ -117,6 +123,14 @@ export default function Admin() {
     setLoading(true);
     try {
       let payload: any = currentForm;
+      if (type === "article" && articleFile) {
+        const url = await handleFileUpload(articleFile, 'gallery');
+        payload = { ...payload, imageUrl: url };
+      }
+      if (type === "news" && newsFile) {
+        const url = await handleFileUpload(newsFile, 'gallery');
+        payload = { ...payload, imageUrl: url };
+      }
       if (type === "event") {
         payload = {
           title: currentForm.title,
@@ -126,6 +140,10 @@ export default function Admin() {
           endDate: currentForm.endDate ? new Date(currentForm.endDate) : null,
           imageUrl: currentForm.imageUrl || null,
         };
+        if (eventImageFile) {
+          const url = await handleFileUpload(eventImageFile, 'gallery');
+          payload.imageUrl = url;
+        }
       }
       if (type === "dailyWord") {
         payload = {
@@ -143,12 +161,13 @@ export default function Admin() {
         };
       }
       if (type === "gallery") {
+        const publicUrl = galleryFile ? await handleFileUpload(galleryFile, 'gallery') : gallery.mediaUrl;
         payload = {
-          title: currentForm.title,
-          description: currentForm.description || null,
-          mediaUrl: currentForm.mediaUrl,
-          mediaType: currentForm.mediaType,
-          eventId: currentForm.eventId ? Number(currentForm.eventId) : null,
+          title: gallery.title,
+          description: gallery.description || null,
+          mediaUrl: publicUrl,
+          mediaType: gallery.mediaType,
+          eventId: gallery.eventId ? Number(gallery.eventId) : null,
         };
       }
       const res = await fetch("/api/admin/content", {
@@ -165,7 +184,8 @@ export default function Admin() {
         if (type === "event") setEventData({ title: "", description: "", location: "", startDate: "", endDate: "", imageUrl: "" });
         if (type === "dailyWord") setDailyWord({ date: "", title: "", content: "", reference: "" });
         if (type === "prayerReason") setPrayerReason({ title: "", description: "", priority: "medium" });
-        if (type === "gallery") setGallery({ title: "", description: "", mediaUrl: "", mediaType: "image", eventId: "" });
+        if (type === "gallery") { setGallery({ title: "", description: "", mediaUrl: "", mediaType: "image", eventId: "" }); setGalleryFile(null); }
+        setArticleFile(null); setNewsFile(null); setEventImageFile(null);
         refreshList();
       }
     } catch {
@@ -231,15 +251,7 @@ export default function Admin() {
     }
   }
 
-  async function handleFileUpload(file: File): Promise<string> {
-    try {
-      const url = await uploadFile(file, 'gallery');
-      return url;
-    } catch (error) {
-      console.error('Upload error:', error);
-      throw error;
-    }
-  }
+  
 
   async function submitRole() {
     setMsg("");
@@ -291,20 +303,10 @@ export default function Admin() {
                 <Input placeholder="Descrição (opcional)" value={article.description} onChange={(e) => setArticle({ ...article, description: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
                 <textarea placeholder="Conteúdo" value={article.content} onChange={(e) => setArticle({ ...article, content: e.target.value })} className="w-full bg-white border-neutral-300 text-black rounded-xl p-2 h-28" />
                 <Input placeholder="Imagem URL (opcional)" value={article.imageUrl} onChange={(e) => setArticle({ ...article, imageUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
-                <input ref={articleFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (f) {
-                    try {
-                      setLoading(true);
-                      const url = await handleFileUpload(f);
-                      setArticle({ ...article, imageUrl: url });
-                      setMsg("Imagem enviada com sucesso!");
-                    } catch (error) {
-                      setMsg("Erro ao enviar imagem: " + String(error));
-                    } finally {
-                      setLoading(false);
-                    }
-                  }
+                <input ref={articleFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0] || null;
+                  setArticleFile(f);
+                  setMsg(f ? "Imagem selecionada. Clique em Publicar." : "");
                 }} />
                 <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => articleFileRef.current?.click()}>
                   Escolher arquivo
@@ -318,20 +320,10 @@ export default function Admin() {
                 <Input placeholder="Descrição (opcional)" value={news.description} onChange={(e) => setNews({ ...news, description: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
                 <textarea placeholder="Conteúdo" value={news.content} onChange={(e) => setNews({ ...news, content: e.target.value })} className="w-full bg-white border-neutral-300 text-black rounded-xl p-2 h-28" />
                 <Input placeholder="Imagem URL (opcional)" value={news.imageUrl} onChange={(e) => setNews({ ...news, imageUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
-                <input ref={newsFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (f) {
-                    try {
-                      setLoading(true);
-                      const url = await handleFileUpload(f);
-                      setNews({ ...news, imageUrl: url });
-                      setMsg("Imagem enviada com sucesso!");
-                    } catch (error) {
-                      setMsg("Erro ao enviar imagem: " + String(error));
-                    } finally {
-                      setLoading(false);
-                    }
-                  }
+                <input ref={newsFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0] || null;
+                  setNewsFile(f);
+                  setMsg(f ? "Imagem selecionada. Clique em Publicar." : "");
                 }} />
                 <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => newsFileRef.current?.click()}>
                   Escolher arquivo
@@ -347,20 +339,10 @@ export default function Admin() {
                 <Input placeholder="Data inicial (YYYY-MM-DD)" value={eventData.startDate} onChange={(e) => setEventData({ ...eventData, startDate: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
                 <Input placeholder="Data final (YYYY-MM-DD) (opcional)" value={eventData.endDate} onChange={(e) => setEventData({ ...eventData, endDate: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
                 <Input placeholder="Imagem URL (opcional)" value={eventData.imageUrl} onChange={(e) => setEventData({ ...eventData, imageUrl: e.target.value })} className="bg-white border-neutral-300 text-black rounded-xl" />
-                <input ref={eventFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={async (e) => {
-                  const f = e.target.files?.[0];
-                  if (f) {
-                    try {
-                      setLoading(true);
-                      const url = await handleFileUpload(f);
-                      setEventData({ ...eventData, imageUrl: url });
-                      setMsg("Imagem enviada com sucesso!");
-                    } catch (error) {
-                      setMsg("Erro ao enviar imagem: " + String(error));
-                    } finally {
-                      setLoading(false);
-                    }
-                  }
+                <input ref={eventFileRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => {
+                  const f = e.target.files?.[0] || null;
+                  setEventImageFile(f);
+                  setMsg(f ? "Imagem selecionada. Clique em Publicar." : "");
                 }} />
                 <Button variant="outline" className="bg-white hover:bg-neutral-100 text-black border border-neutral-300 rounded-xl" type="button" onClick={() => eventFileRef.current?.click()}>
                   Escolher arquivo
@@ -401,20 +383,13 @@ export default function Admin() {
                   capture="environment"
                   multiple
                   className="hidden"
-                  onChange={async (e) => {
+                  onChange={(e) => {
                     const files = Array.from(e.target.files || []);
                     if (files.length > 0) {
                       const f = files[0];
-                      try {
-                        setLoading(true);
-                        const url = await handleFileUpload(f);
-                        setGallery({ ...gallery, mediaUrl: url, mediaType: f.type.startsWith("video") ? "video" : "image" });
-                        setMsg("Arquivo enviado com sucesso!");
-                      } catch (error) {
-                        setMsg("Erro ao enviar arquivo: " + String(error));
-                      } finally {
-                        setLoading(false);
-                      }
+                      setGalleryFile(f);
+                      setGallery({ ...gallery, mediaUrl: "", mediaType: f.type.startsWith("video") ? "video" : "image" });
+                      setMsg("Arquivo selecionado. Clique em Publicar.");
                     }
                   }}
                 />

@@ -46,7 +46,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       let result: any = null;
       if (type === 'article') result = await db.createArticle({ ...data, authorId: me.id });
       else if (type === 'news') result = await db.createNews({ ...data, authorId: me.id });
-      else if (type === 'event') result = await db.createEvent(data);
+      else if (type === 'event') {
+        const sd = new Date(data?.startDate);
+        const ed = data?.endDate ? new Date(data.endDate) : null;
+        if (isNaN(sd.getTime())) { res.status(400).json({ success: false, error: 'invalid_startDate' }); return; }
+        const eventData = {
+          title: String(data?.title || ''),
+          description: data?.description || null,
+          content: data?.content || null,
+          location: data?.location || null,
+          imageUrl: data?.imageUrl || null,
+          startDate: sd,
+          endDate: ed,
+        };
+        result = await db.createEvent(eventData as any);
+      }
       else if (type === 'dailyWord') result = await db.createDailyWord(data);
       else if (type === 'prayerReason') result = await db.createPrayerReason(data);
       else if (type === 'gallery') result = await db.createGalleryItem({ ...data, uploadedBy: me.id });

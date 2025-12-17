@@ -1,8 +1,9 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { InsertUser, users, articles, news, events, hymns, dailyWords, prayerReasons, serviceSchedules, galleryItems, contactSubmissions, campaigns, campaignDonations, userFavorites, InsertArticle, InsertNews, InsertEvent, InsertHymn, InsertDailyWord, InsertPrayerReason, InsertServiceSchedule, InsertGalleryItem, InsertContactSubmission, InsertCampaign, InsertCampaignDonation, InsertUserFavorite } from "./schema.js";
-import { ENV } from './_core/env.js';
+import { users, articles, news, events, hymns, dailyWords, prayerReasons, serviceSchedules, galleryItems, contactSubmissions, campaigns, campaignDonations, userFavorites } from "./schema.ts";
+import type { InsertUser, InsertArticle, InsertNews, InsertEvent, InsertHymn, InsertDailyWord, InsertPrayerReason, InsertServiceSchedule, InsertGalleryItem, InsertContactSubmission, InsertCampaign, InsertCampaignDonation, InsertUserFavorite } from "./schema.ts";
+import { ENV } from './_core/env.ts';
 import crypto from "crypto";
 
 let _db: ReturnType<typeof drizzle> | null = null;
