@@ -5,10 +5,14 @@ const supabaseAnonKey = 'sb_publishable_nShPs5nsxdNzxQ4PnkxDfg_18aZH9s1';
 export const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVneWJjZ3VidHZyanlvZGNlZ2VpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NTEzMzQ0NSwiZXhwIjoyMDgwNzA5NDQ1fQ.Cw5IdJRGlp8nCEYFsQinOL3HKibJVqhrv_WGbIzgcVk';
 
 // Cliente público para leitura
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: { persistSession: false, autoRefreshToken: false, storageKey: 'sb-pub' },
+});
 
 // Cliente com service key para uploads (contorna RLS)
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
+  auth: { persistSession: false, autoRefreshToken: false, storageKey: 'sb-admin' },
+});
 
 export async function handleFileUpload(file: File, bucket: string = 'gallery'): Promise<string> {
   return uploadFile(file, bucket);

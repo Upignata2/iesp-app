@@ -212,8 +212,8 @@ const server = http.createServer(async (req, res) => {
       if (method === 'POST') {
         const data = body?.data || {};
         let result: any = null;
-        if (type === 'article') result = await createArticle({ ...data, authorId: me.id });
-        else if (type === 'news') result = await createNews({ ...data, authorId: me.id });
+        if (type === 'article') result = await createArticle({ ...data, authorId: me ? me.id : null });
+        else if (type === 'news') result = await createNews({ ...data, authorId: me ? me.id : null });
         else if (type === 'event') {
           const sd = typeof data.startDate === 'string' ? new Date(data.startDate) : data.startDate;
           const ed = data.endDate ? (typeof data.endDate === 'string' ? new Date(data.endDate) : data.endDate) : null;
@@ -235,7 +235,7 @@ const server = http.createServer(async (req, res) => {
         }
         else if (type === 'dailyWord') result = await createDailyWord(data);
         else if (type === 'prayerReason') result = await createPrayerReason(data);
-        else if (type === 'gallery') result = await createGalleryItem({ ...data, uploadedBy: me.id });
+        else if (type === 'gallery') result = await createGalleryItem({ ...data, uploadedBy: me ? me.id : null });
         else { res.statusCode = 400; res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify({ success: false, error: 'invalid_type' })); return; }
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ success: true, result }));
