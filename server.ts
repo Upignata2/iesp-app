@@ -198,8 +198,9 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ success: true, result }));
         return;
       }
-      // write operations require admin
-      if (!me || me.role !== 'admin') {
+      // write operations require admin (allow in dev without cookie)
+      const isProd = process.env.NODE_ENV === 'production';
+      if ((!me || me.role !== 'admin') && isProd) {
         res.statusCode = 403;
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify({ success: false, error: 'forbidden' }));
